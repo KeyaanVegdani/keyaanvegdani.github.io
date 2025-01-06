@@ -1,0 +1,126 @@
+@font-face {
+    font-family: 'SF-Mono';
+    src: url('../SFNSMono.ttf');
+}
+
+.intro-segment{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    max-width: max-content;
+}
+
+.divider-line{
+    border-bottom: 0.01rem rgb(14, 17, 69) solid;
+    margin-bottom: 6rem;
+}
+
+.segment{
+    margin-top: 4rem;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 4rem;
+}
+
+.lower-vid{
+    width: 38rem;
+    height: 21rem;
+}
+
+.image{
+    background-color: #141923;
+    margin-top: 2rem;
+    border-radius: 2rem;
+    border: solid 0.01rem #283550;
+    padding: 1rem;
+    img{
+        border-radius: 1rem;
+        max-width: 100%;
+    }
+    video{
+        max-width: 100%;
+        border-radius: 1rem;
+    }
+}
+
+.tag{
+    background-color: #141923;
+    border-radius: 0.5rem;
+    border: solid 0.01rem #283550;
+    max-width: fit-content;
+    padding: 0.3rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+    font-family: SF-Mono;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+figcaption{
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+    p{
+        text-align: left;
+        display: inline;
+        font-size: 0.8rem;
+    }
+}
+
+.smaller{
+    max-width: 30rem;
+}
+
+.two-col{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.two-col-vid{
+    display: grid;
+    grid-template-columns: 1fr 0.885fr;
+}
+
+
+.image-col{
+    margin: 0.25rem;
+}
+
+iframe{
+    width: 68rem;
+    height: 38rem;
+    margin-right: auto;
+    margin-left: auto;
+    border-radius: 1rem;
+}
+
+
+
+/* Media Query */
+@media(max-width: 73rem){
+    iframe{
+        width: 99%;
+        height: 56vw;
+    }
+}
+
+@media(max-width: 45rem){
+    .two-col{
+        grid-template-columns: 1fr;
+    }
+    .two-col-vid{
+        grid-template-columns: 1fr ;
+    }
+
+    .intro-segment{
+        grid-template-columns: 1fr;
+    }
+
+    .top-vid{
+        padding: 0.25rem;
+    }
+    .lower-vid{
+        width: 99%;
+        height: 56vw;
+    }
+}
+
