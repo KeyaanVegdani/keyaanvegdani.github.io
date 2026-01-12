@@ -1,0 +1,122 @@
+
+.intro{
+    max-width: 60rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10rem;
+}
+
+h1{
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+
+.subtitle{
+    margin-left: auto;
+    margin-right: auto;
+    max-width: fit-content;
+    font-weight: 500;
+    color: #2B7FFF;
+    margin-bottom: 0rem;
+}
+
+p{
+    max-width: 28rem;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.important{
+    font-size: 1.5rem;
+    max-width: 40rem;
+
+}
+
+.proj-section{
+    margin-top: 10rem;
+    max-width: 60rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h2{
+    position: relative;
+    max-width: fit-content;
+    background-color:unset;
+    border: unset;
+    margin: 0;
+    padding: 0;
+    font-size: 1.75rem;
+    font-weight: 500;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+figure{
+    margin-top: 3rem;
+    padding: 1rem;
+    background-color: #0C0D1B;
+    border: solid 0.05rem #191c30;
+    border-radius: 0.5rem;
+}
+
+figure img{
+    border-radius: 0.5rem;
+    max-width: 100%;
+}
+
+.tag{
+    background-color: #141923;
+    border-radius: 0.5rem;
+    border: solid 0.01rem #283550;
+    max-width: fit-content;
+    padding: 0.3rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.head2{
+    margin-bottom: 2rem;
+}
+
+.add-margin{
+    margin-top: 4rem;
+}
+figcaption{
+    margin-top: 1rem;
+    color: #86888e;
+    
+}
+
+.bottom-margin{
+    margin-bottom: 1rem;
+}
+
+iframe {
+  width: 100%;       /* Makes the iframe fill the width of its container */
+  height: auto;      /* Allows the height to adjust automatically */
+  aspect-ratio: 16 / 9; /* Maintains a 16:9 aspect ratio (based on original width 640/height 360) */
+  border-radius: 0.5rem;
+}
+
+video{
+    border-radius: 0.5rem;
+}
+
+h2{
+    max-width: 40rem;
+    text-align: center;
+}
+
+.top{
+    margin-top: 20rem;
+}
