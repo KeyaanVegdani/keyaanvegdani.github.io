@@ -1,0 +1,119 @@
+:root{
+    --grey-1: #6A6B71;
+    --text-2: #8F9199;
+    --text-1: #111214;
+
+}
+
+::selection {
+    background-color: black;
+    color: white;
+}
+
+/* Layout */
+html,
+body {
+   margin: 0;
+   padding: 0;
+   background-color: #F7F9FB;
+}
+
+
+
+/* Text */
+
+*{
+    font-family: "Inter", sans-serif;
+}
+
+h1{
+    font-family: "That That New Pixel Test Round";
+    font-style: normal;
+    font-size: 3rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 100%; /* 3rem */
+    letter-spacing: -0.12rem;
+    -webkit-text-stroke-width: 0.02rem;
+    -webkit-text-stroke-color: var(--text-1);
+    color: var(--text-1);
+    margin: 0;
+    margin-bottom: 1.8rem;
+}
+
+.subtitle{
+
+    color: var(--text-2);
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.05rem;
+    max-width: 24rem;
+}
+
+nav a{
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.04rem;
+    text-decoration: none;
+    color: var(--text-2);
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+footer a{
+    color: var(--text-2);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.04rem;
+    text-decoration: none;
+}
+
+.ball{
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--text-2);
+    margin-left: 0rem;
+    margin-right: 1rem;
+    margin-bottom: 0.05rem;
+    border-radius: 1rem;
+}
+
+.movie-mode{
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+}
+.movie-mode svg{
+    margin-top: -0.1rem;
+    margin-right: 0.75rem;
+}
+
+
+
+/* Layout */
+
+.side-bar{
+    max-width: 35.5rem;
+    margin: 4rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+nav{
+    margin-bottom: 3.5rem;
+}
+
+footer{
+    position: absolute;
+    bottom: 0;
+}
+
