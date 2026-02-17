@@ -106,7 +106,7 @@ nav a:hover svg path, nav a:focus svg path{
 }
 
 .keyaan{
-    font-family: "STIX Two Text";
+    font-family: "STIX Two Text", sans-serif;
     font-size: 1.25rem;
     font-style: italic;
     font-weight: 600;
@@ -135,7 +135,7 @@ video{
 .vid-caption a{
     display: flex;
     text-decoration: none;
-    font-family: Inter;
+    font-family: Inter, sans-serif;
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
@@ -160,7 +160,7 @@ video{
 }
 
 h2{
-    font-family: "Inter";
+    font-family: "Inter", sans-serif;
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
@@ -301,7 +301,7 @@ h2{
 
 .play-content a{
     color: #A7A7A7;
-    font-family: Inter;
+    font-family: Inter, sans-serif;
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
@@ -314,7 +314,7 @@ h2{
 /* footer */
 
 footer{
-    font-family: "inter";
+    font-family: "inter", sans-serif;
 }
 
 #cover{
