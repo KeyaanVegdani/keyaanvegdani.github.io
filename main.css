@@ -536,6 +536,15 @@ footer a{
         height: auto;
 }
 
+.music-section{
+    visibility: hidden;
+}
+
+.left-foot{
+    visibility: hidden;
+}
+
+
 }
 
 @media(max-width: 38rem){
