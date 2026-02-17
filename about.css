@@ -1,0 +1,195 @@
+body{
+    background-color: #F8F3ED;
+}
+
+nav{
+    background-color: #F8F3ED;
+    z-index: 40;
+}
+
+nav a{
+    color: rgb(129, 124, 121);
+}
+
+nav svg path{
+    fill: rgb(129, 124, 121);
+}
+
+nav a:hover, nav a:focus{
+    color: rgb(50, 47, 44);
+}
+
+nav a:hover svg path, nav a:focus svg path{
+    fill: rgb(50, 47, 44);
+}
+
+
+.polaroids{
+    max-width: 50rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 10rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.polaroids img{
+    max-width: 100%;
+    box-shadow: 4px 6px 7.7px 0 rgba(0, 0, 0, 0.25);
+    border-radius: 1rem;
+    transition: transform 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.top:hover{
+    transform: rotate(-8deg) translate(0, -5rem);
+}
+
+.top{
+    margin-bottom: -8rem;
+    z-index: 10;
+}
+
+.one{
+    transform: rotate(-6deg);
+}
+
+.two{
+    transform: translate(0, -4rem);
+}
+
+.three{
+    transform: rotate(8deg);
+}
+
+.four{
+    transform: rotate(4deg);
+}
+
+.five{
+    transform: rotate(-4deg);
+}
+
+.bot:hover{
+    z-index: 20;
+    transform: translate(0, -2rem) rotate(2deg);
+}
+
+
+
+h1{
+    color: #1B1917;
+    font-family: "STIX Two Text";
+    font-size: 2.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 100%; /* 2.5rem */
+    letter-spacing: -0.075rem;
+    margin-bottom: 0.7rem;
+}
+
+h2{
+    color: #655F5F;
+    font-family: Inter;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 100%; /* 1rem */
+    letter-spacing: -0.03rem;
+}
+
+h3{
+    color: #1B1917;
+    font-family: "STIX Two Text";
+    font-size: 2.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 100%; /* 2.5rem */
+    letter-spacing: -0.075rem;
+    margin-bottom: 0.7rem;
+    margin-top: 8rem;
+}
+.initial-desc{
+    color: #423e3e;
+    font-family: Inter;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    max-width: 45rem;
+    margin-bottom: 6rem;
+}
+
+
+/* About Section */
+
+.biography{
+    max-width: 45rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10rem;
+    font-family: "Inter", sans-serif;
+}
+
+.clickable-word {
+    cursor: pointer;
+    text-underline-offset: 0.1rem;
+    color: #9c9393;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.biography p{
+    color: #423e3e;
+    font-family: Inter;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    max-width: 45rem;
+}
+
+.biography a{
+    text-decoration: underline;
+    color: #3968f5;
+    font-family: Inter;
+    font-size: 1.5rem;
+}
+
+.clickable-word:hover {
+    opacity: 0.7;
+}
+
+
+@media(max-width: 62rem){
+    .biography{
+        padding: 2rem;
+    }
+
+    .top{
+        margin-bottom: 2rem;
+    }
+
+    .polaroids{
+        padding: 2rem;
+    }
+
+    h1{
+        margin-top: 0rem;
+    }
+}
+
+@media(max-width: 40rem){
+    .polaroids{
+        padding: 2rem;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .biography p{
+        font-size: 1rem;
+    }
+
+    .initial-desc{
+        margin-bottom: 2rem;
+    }
+}
