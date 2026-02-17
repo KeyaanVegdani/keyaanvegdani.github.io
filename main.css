@@ -4,6 +4,27 @@
     --nav-text: #9CA9D0;
 }
 
+:root{
+    --background-colour: #f9fafb;
+    --footer-bg: #f9fafb9f;
+    --text1: #101011;
+    --text2: #38393d;
+    --text3: #858793;
+    --highlight: #dae9f1;
+    --text-highlight: #197feb;
+
+    --hover-border: #e8e8e8;
+    --hover-shadow: #9a9ea571;
+    --hover-inset: #ffffff;
+    --hover-background: #ffffffb3;
+    --listening: #07a056;
+
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
 html, body{
     margin: 0;
 }
@@ -27,6 +48,10 @@ section{
 
 .bawl{
     background-color: #181814;
+}
+
+.playground{
+    background-color: #131314;
 }
 
 .video-container{
@@ -259,14 +284,191 @@ h2{
 }
 
 
+.play-content{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    padding: 4rem;
+    
+}
+
+.play-content video{
+    max-width: 100%;
+    border-radius: 1rem;
+    box-shadow: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.25);
+    margin-bottom: 1rem;
+}
+
+.play-content a{
+    color: #A7A7A7;
+    font-family: Inter;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-decoration: none;
+}
 
 
 
+/* footer */
+
+footer{
+    font-family: "inter";
+}
+
+#cover{
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    width: 4rem;
+    border-radius: 0.3rem;
+}
+#song{
+    font-size: 1rem;
+    font-weight: 550;
+    color: #D4D4D4;
+    display: inline-block;
+    margin-bottom: 0;
+}
+#artist{
+    font-size: 1rem;
+    margin-top: 0.1rem;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-left: 1rem;
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+.music-section{
+    display: flex;
+    max-width: fit-content;
+    align-items: center;
+    gap: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+#timeAgo{
+    font-size: 1rem;
+    margin-top: 0.1rem;
+    position: relative;
+    color: #999c9a;
+    transition: color 0.25s ease;
+}
+
+#timeAgo::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background-color: var(--listening);
+  transform: translateY(-50%) scale(0);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+}
+
+#timeAgo.listening {
+    color: var(--listening);
+    padding-left: 1.2em;
+    text-decoration: none;
+}
+
+#timeAgo.listening::before {
+  opacity: 1;
+  animation: pulseDot 1.5s cubic-bezier(.4,0,.2,1) infinite;
+}
+
+.music-box{
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    max-width: fit-content;
+}
+
+.music-arrow{
+    right: 1rem;
+}
+
+footer{
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 999;
+    height: 8rem;
+    background-color: #35494B;
+}
+
+#seasonEmoji {
+  margin-right: 0.5em;
+  font-size: 1.2rem;
+  display: inline-block;
+  text-align: right;
+  vertical-align: middle;
+}
+
+#pstTime{
+    font-size: 1rem;
+    font-weight: 550;
+    color: #D4D4D4;
+    align-items: center;
+    margin-bottom: 0rem;
+    text-align: right;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.footer-text{
+    font-size: 1rem;
+    margin-top: 0.25rem;
+    text-align: right;
+    color: #999c9a;
+    display: block;
+}
+
+.left-foot{
+    max-width: fit-content;
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+
+footer a{
+    text-decoration: none;
+}
 
 
 
-
-
+/* Pulse animation */
+@keyframes pulseDot {
+  0% {
+    transform: translateY(-50%) scale(0.85);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50%) scale(0.85);
+    opacity: 1;
+  }
+}
 
 
 
@@ -277,12 +479,23 @@ h2{
     .google .video-container{
         width: 40rem;
     }
+
+    .play-content{
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 @media(max-width: 44rem){
     .google .video-container{
         width: 30rem;
     }
+    .play-content{
+    grid-template-columns: 1fr;
+}
+
+.playground{
+    height: max-content;
+}
 }
 
 @media(max-width: 39rem){
@@ -322,6 +535,7 @@ h2{
         transform: translate(-50%, -50%);
         height: auto;
 }
+
 }
 
 @media(max-width: 38rem){

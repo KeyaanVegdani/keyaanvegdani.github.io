@@ -77,6 +77,8 @@ nav a:hover svg path, nav a:focus svg path{
 
 
 
+
+
 h1{
     color: #1B1917;
     font-family: "STIX Two Text";
@@ -158,6 +160,32 @@ h3{
 
 .clickable-word:hover {
     opacity: 0.7;
+}
+
+footer{
+    background-color: #F8F3ED;
+    margin-top: 8rem;
+}
+
+#pstTime{
+    font-size: 1rem;
+    font-weight: 550;
+    color: rgba(27, 25, 23, 1);
+    align-items: center;
+    margin-bottom: 0rem;
+    text-align: right;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* rgba(27, 25, 23, 1) */
+
+#song{
+    font-size: 1rem;
+    font-weight: 550;
+    color: rgba(27, 25, 23, 1);
+    display: inline-block;
+    margin-bottom: 0;
 }
 
 
