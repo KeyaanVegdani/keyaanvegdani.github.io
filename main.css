@@ -1,3 +1,6 @@
+
+
+
 /* Sections */
 :root {
     --nav-bg: #1C1C3C;
@@ -18,6 +21,30 @@
     --hover-inset: #ffffff;
     --hover-background: #ffffffb3;
     --listening: #07a056;
+
+}
+
+*::-webkit-media-controls-panel {
+
+  display: none!important;
+
+  -webkit-appearance: none;
+
+}
+
+*::--webkit-media-controls-play-button {
+
+  display: none!important;
+
+  -webkit-appearance: none;
+
+}
+
+*::-webkit-media-controls-start-playback-button {
+
+  display: none!important;
+
+  -webkit-appearance: none;
 
 }
 
