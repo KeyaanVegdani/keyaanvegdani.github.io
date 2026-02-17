@@ -135,7 +135,7 @@ video{
 .vid-caption a{
     display: flex;
     text-decoration: none;
-    font-family: Inter, sans-serif;
+    font-family: "Inter", sans-serif;
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
@@ -301,7 +301,7 @@ h2{
 
 .play-content a{
     color: #A7A7A7;
-    font-family: Inter, sans-serif;
+    font-family: "Inter", sans-serif;
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
