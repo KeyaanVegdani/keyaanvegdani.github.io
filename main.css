@@ -4,8 +4,8 @@ body{
     width: 100%;
     min-height: 100vh;
     background: linear-gradient(180deg, #101010 64.92%, #141516 90.37%, #1D1E1F 99.53%);
-    background-color: rgba(29, 30, 31, 1);
-    /* background: linear-gradient(180deg, #101010 64.92%, #0E1624 90.37%, #0E2436 99.53%); */
+    background: linear-gradient(180deg, #101010 64.92%, #0E1624 90.37%, #0E2436 99.53%);
+        background-color: #0E2436;
 }
 .main{
     max-width: 56.28rem;
@@ -45,6 +45,12 @@ h1{
     letter-spacing: -0.05rem;
     display: inline-block;
 
+}
+
+h1{
+    span{
+        margin-right: 0.6rem;
+    }
 }
 svg{
     display: inline-block;
@@ -98,11 +104,76 @@ nav{
     transition: ease-in-out;
 }
 
+
+.mute-btn {
+    position: absolute;
+    bottom: 3.2rem;
+    right: 3rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #001f5500;
+    mix-blend-mode: exclusion;
+}
+
+
+.mute-btn{
+    svg{
+        width: 1rem;
+        height: 1rem;
+        path{
+            fill: white;
+        }
+    }
+}
+
+.mute-btn:hover, .mute-btn:focus {
+    svg{
+        path{
+            fill: #E3E3E3;
+        }
+    }
+    mix-blend-mode: normal;
+    background-color: #181818;
+}
+summary{
+    color: #228DFF;
+    font-family: "DM Mono";
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-radius: 0.375rem;
+    background: #001F55;
+    padding: 0.38rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    list-style: none;
+}
+details p{
+    position: absolute;
+}
+summary::-webkit-details-marker {
+  display: none; /* Legacy WebKit support (Older Safari/Chrome) */
+}
+
+summary::marker {
+  content: ""; /* Fallback alternative for stubborn modern browsers */
+}
+
 @keyframes slideIn{
     0%{
         transform: translate(0, 4rem);
         filter: blur(0.25rem);
         opacity: 0%;
+        -webkit-filter: blur(0.25rem);
     }
     25%{
         opacity: 100%;
@@ -110,6 +181,7 @@ nav{
 
     75%{
         filter: blur(0);
+        -webkit-filter: blur(0rem);
     }
 
     100%{
@@ -121,15 +193,85 @@ nav{
     0%{
         transform: translate(0rem, 3rem);
         filter: blur(0.4rem);
+        -webkit-filter: blur(0.4rem);
     }
 
     40%{
         transform: translate(0rem, 3rem);
         filter: blur(0.4rem);
+        -webkit-filter: blur(0.4rem);
     }
     100%{
+        -webkit-filter: blur(0rem);
         filter: blur(0rem);
 
     }
+
+}
+
+
+@media (max-width: 61rem){
+    .main{
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+    .mute-btn {
+    position: absolute;
+    bottom: 3.6rem;
+    right: 5rem;
+    }
+}
+
+@media (max-width: 40rem){
+    .video-container{
+        padding: 0.5rem;
+        border-radius: 1.5rem;
+    }
+}
+
+@media (max-width: 35rem){
+    nav{
+    margin: 0;
+    margin-bottom: 1.25rem;
+    align-items:normal;
+    align-self: normal;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    }
+
+    .external-links{
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    @keyframes headingIn{
+    0%{
+        transform: none;
+        filter: blur(0.4rem);
+        -webkit-filter: blur(0.4rem);
+        opacity: 0%;
+    }
+
+    100%{
+        -webkit-filter: blur(0rem);
+        filter: blur(0rem);
+        opacity: 100%;
+
+    }
+
+    }
+
+    h1{
+        font-size: 1rem;
+    }
+
+    .mute-btn {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 3rem;
+    }
+
 
 }
