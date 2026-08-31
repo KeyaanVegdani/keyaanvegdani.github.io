@@ -1,0 +1,346 @@
+/* Default Stylings */
+
+:root {
+  --gray1: #EDEDED;
+  --white: #FFFFFF;
+
+  --blue: #005eff;
+  --lightBlue: #e2f4fd;
+  --black: #2C2C2C;
+  --black-2: #494949;
+  --black-3: #949494;
+
+}
+
+html{
+    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: var(--gray1);
+    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+}
+
+h1{
+    color: var(--black);
+    text-align: center;
+    font-family: "Inter", sans-serif;
+    font-size: 2.25rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 2.7rem */
+    letter-spacing: -0.09rem;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h2{
+    color: var(--black-3);
+    text-align: center;
+    font-family: Inter;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%; /* 1.2rem */
+    letter-spacing: -0.04rem;
+    animation-name: slotMachine;
+    animation-duration: 800ms;
+    transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+h3{
+    color: var(--black);
+    font-family: "Inter", sans-serif;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 2.7rem */
+    letter-spacing: -0.06rem;
+    margin: 0;
+}
+
+p{
+    font-family: "Inter", sans-serif;
+    line-height: 140%; /* 1.2rem */
+    font-size: 1rem;
+    letter-spacing: -0.04rem;
+    font-weight: 400;
+    color: var(--black-2);
+}
+
+
+/* Classes */
+
+.mono{
+    font-family: 'DM Mono', monospace;
+}
+
+.sans{
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%; /* 3rem */
+}
+
+.main-content{
+    max-width: 70rem;
+    background-color: var(--white);
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    animation-name: slideIn;
+    animation-duration: 1s;
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+    transform: translate(0,0);
+    margin-top: 12.75rem;
+    margin-bottom: 0rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.heading{
+    padding-top: 5.25rem;
+    overflow: hidden;
+}
+
+.proj-nav{
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: 1.25rem;
+    border: 1px solid #EDEDED;
+    background: rgba(255, 255, 255, 0.60);
+    box-shadow: 0 -5px 4px 0 rgba(255, 255, 255, 0.25) inset, 0 4px 3.8px 0 rgba(255, 255, 255, 0.40) inset;
+    backdrop-filter: blur(4px);
+    width: fit-content;
+    overflow: hidden;
+}
+
+nav{
+    position: sticky;
+    top: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.lowHierarchy{
+    color:var(--black-3);
+    font-family: "Inter", sans-serif;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%; /* 1.2rem */
+    letter-spacing: -0.04rem;
+}
+
+.backHome{
+    text-decoration: none;
+    mix-blend-mode: difference;
+}
+
+.currentPage:hover{
+    color: var(--blue);
+}
+
+.backHome:hover{
+    color: var(--black);
+    svg{
+        path{
+            fill: var(--black);
+        }
+    }
+}
+
+.svgButton:hover{
+    svg{
+        path{
+            fill: var(--blue);
+        }
+    }
+}
+
+.currentPage{
+    text-decoration: none;
+}
+
+.highHierarchy{
+    color:var(--black);
+    font-family: "Inter", sans-serif;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 1.2rem */
+    letter-spacing: -0.04rem;
+}
+
+.proj-nav svg{
+    margin-bottom: -0.2rem;
+}
+
+
+summary svg{
+    padding-bottom: 0.3rem;
+    padding-top: 0.1rem;
+}
+
+.sumContent{
+    position: absolute;
+}
+
+video{
+    max-width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border-radius: 1.25rem;
+}
+
+video::-webkit-media-controls {
+  display: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+.banner{
+    margin-top: 5.25rem;
+    width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+.writtenContent{
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.segment{
+    margin-top: 5.25rem;
+}
+
+.inline-link{
+    color: var(--black-3);
+    text-decoration: none;
+    svg{
+        margin-bottom: 0.45rem;
+    }
+}
+
+.inline-link:hover, .inline-link:focus{
+    color: var(--blue);
+    svg{
+        path{
+            stroke: var(--blue);
+        }
+        fill: var(--blue);
+
+
+    }
+}
+
+.chapter{
+    display: inline-block;
+    font-family: "Inter", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--blue);
+    background-color: var(--lightBlue);
+    padding: 0.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-radius: 0.2rem;
+    margin: 0;
+    height: fit-content;
+
+}
+
+.chapTitle{
+    display: inline-flex;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+
+
+
+
+
+
+
+/* Animations */
+
+.backHome{
+    animation-name: slotMachine;
+    animation-duration: 400ms;
+    transition: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.lowHierarchy{
+    animation-name: slotMachine;
+    animation-duration: 500ms;
+    transition: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.highHierarchy{
+    animation-name: slotMachine;
+    animation-duration: 600ms;
+    transition: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.sideObj{
+    animation-name: lateFade;
+    animation-duration: 2s;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translate(0, 6rem);
+    opacity: 0%;
+    filter: blur(1rem);
+    -webkit-filter: blur(1rem);
+  }
+
+  60%{
+    opacity: 100%;
+    filter: blur(0);
+    -webkit-filter: blur(0rem);
+  }
+
+  100%{
+
+  }
+}
+
+@keyframes slotMachine {
+    0%{
+        transform: translate(0, 4rem);
+    }
+    50%{
+        transform: translate(0, 4rem);
+    }
+    100%{
+
+    }
+}
+
+@keyframes lateFade{
+    0%{
+        opacity: 0%;
+    }
+    70%{
+        opacity: 0%;
+    }
+    100%{
+    }
+}
