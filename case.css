@@ -221,6 +221,12 @@ nav{
     flex-direction: row;
     gap: 1rem;
 }
+
+.two-layers{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
 .layer{
     background-color: var(--black-2);
     height: fit-content;
@@ -424,6 +430,17 @@ nav:hover{
     }
 }
 
+
+.layer img{
+    max-width: 100%;
+    border-radius: 0.75rem;
+}
+
+
+
+.proj-img{
+    border-radius: 1rem;
+}
 
 
 @keyframes page-spawn{
