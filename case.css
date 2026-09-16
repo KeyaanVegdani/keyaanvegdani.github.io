@@ -296,7 +296,22 @@ details:hover, details:focus{
     margin-top: 2rem;
 }
 
+.margin-top{
+    margin-top: 2rem;
+}
 
+.end-signature{
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10rem;
+}
+
+.draw-me {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 2;
+}
 
 
 

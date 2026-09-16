@@ -19,6 +19,11 @@ html{
     scroll-behavior: smooth;
 }
 
+img{
+    max-width: 100%;
+    height: auto;
+}
+
 
 
 
@@ -132,6 +137,8 @@ nav:hover{
         fill: var(--blue);
     }
 }
+
+
 
 
 
@@ -354,6 +361,7 @@ video{
     max-width: 100%;
     height: auto;
     border-radius: 0.4rem;
+    margin: 0;
 }
 
 .vid-link-div{
@@ -509,6 +517,14 @@ video{
 }
 
 
+.playground{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+.playground img{
+    border-radius: 0.25rem;
+}
 
 
 
