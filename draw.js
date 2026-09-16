@@ -2,7 +2,7 @@ function drawPathOnScroll(className, options = {}) {
   const {
     duration = 1500,
     easing = 'ease-in-out',
-    threshold = 0.5,
+    threshold = 0.8,
   } = options;
 
   const paths = document.querySelectorAll(`.${className}`);

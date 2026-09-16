@@ -15,6 +15,18 @@ body{
     margin: 0;
 }
 
+/* body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #EDEDED 0%, #e8f0f3 100%);
+} */
+
 html{
     scroll-behavior: smooth;
 }
@@ -524,6 +536,11 @@ video{
 }
 .playground img{
     border-radius: 0.25rem;
+}
+
+.vid-section video{
+    max-width: 100%;
+    height: auto;
 }
 
 
