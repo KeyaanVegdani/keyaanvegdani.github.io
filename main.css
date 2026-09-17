@@ -13,6 +13,7 @@
 body{
     background-color: var(--off-white);
     margin: 0;
+    
 }
 
 /* body::before {
@@ -35,6 +36,7 @@ img{
     max-width: 100%;
     height: auto;
 }
+
 
 
 
@@ -66,6 +68,7 @@ nav{
     view-transition-name: nav; */
     view-transition-name: nav;
     display: flex;
+    align-items: center;
     gap: 1rem;
 
     animation-name: nav;
@@ -150,6 +153,46 @@ nav:hover{
     }
 }
 
+
+
+.ext-nav{
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid #FFF;
+    background: var(--transparent-white);
+    font-size: 1rem;
+    animation-name: ext-nav;
+    animation-duration: 2.25s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ext-nav:hover, .ext-nav:focus{
+    background-color: #06F;
+    border: 0.1rem solid #5297FF;
+    color: var(--white);
+    transform: scale(101%);
+}
+
+.blue{
+    background-color: #06F;
+    border: 0.08rem #5297FF solid;
+    path{
+        fill: var(--white);
+    }
+}
+
+.links{
+    display: flex;
+    gap: 0.25rem;
+}
+
+.subtle{
+    color: var(--black-3);
+
+    path{
+        fill: var(--black-3);
+    }
+}
 
 
 
@@ -546,6 +589,164 @@ video{
 
 
 
+/* EXRTRAs */
+
+
+
+.progressive-blur-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 900;
+  width: 100dvw;
+  height: 4rem;
+}
+
+.progressive-blur-header .blur {
+  pointer-events: none;
+  display: grid;
+  height: inherit;
+}
+
+.progressive-blur-header .blur span {
+  grid-area: 1/1;
+}
+
+.progressive-blur-header .blur span:first-child {
+  backdrop-filter: blur(1px);
+  mask: linear-gradient(0deg, transparent, #000 8%);
+}
+
+.progressive-blur-header .blur span:nth-child(2) {
+  backdrop-filter: blur(4px);
+  mask: linear-gradient(0deg, transparent 8%, #000 16%);
+}
+
+.progressive-blur-header .blur span:nth-child(3) {
+  backdrop-filter: blur(8px);
+  mask: linear-gradient(0deg, transparent 16%, #000 24%);
+}
+
+.progressive-blur-header .blur span:nth-child(4) {
+  backdrop-filter: blur(16px);
+  mask: linear-gradient(0deg, transparent 24%, #000 36%);
+}
+
+.progressive-blur-header .blur span:nth-child(5) {
+  backdrop-filter: blur(24px);
+  mask: linear-gradient(0deg, transparent 36%, #000 48%);
+}
+
+.progressive-blur-header .blur span:nth-child(6) {
+  backdrop-filter: blur(32px);
+  mask: linear-gradient(0deg, transparent 48%, #000 60%);
+}
+
+
+.progressive-blur-footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 900;
+  width: 100dvw;
+  height: 4rem;
+  transform: rotate(180deg);
+}
+
+.progressive-blur-footer .blur {
+  pointer-events: none;
+  display: grid;
+  height: inherit;
+}
+
+.progressive-blur-footer .blur span {
+  grid-area: 1/1;
+}
+
+.progressive-blur-footer .blur span:first-child {
+  backdrop-filter: blur(1px);
+  mask: linear-gradient(0deg, transparent, #000 8%);
+}
+
+.progressive-blur-footer .blur span:nth-child(2) {
+  backdrop-filter: blur(4px);
+  mask: linear-gradient(0deg, transparent 8%, #000 16%);
+}
+
+.progressive-blur-footer .blur span:nth-child(3) {
+  backdrop-filter: blur(8px);
+  mask: linear-gradient(0deg, transparent 16%, #000 24%);
+}
+
+.progressive-blur-footer .blur span:nth-child(4) {
+  backdrop-filter: blur(16px);
+  mask: linear-gradient(0deg, transparent 24%, #000 36%);
+}
+
+.progressive-blur-footer .blur span:nth-child(5) {
+  backdrop-filter: blur(24px);
+  mask: linear-gradient(0deg, transparent 36%, #000 48%);
+}
+
+.progressive-blur-footer .blur span:nth-child(6) {
+  backdrop-filter: blur(32px);
+  mask: linear-gradient(0deg, transparent 48%, #000 60%);
+}
+
+
+
+
+.end-signature{
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10rem;
+}
+
+.draw-me {
+  fill: none;
+  stroke: var(--black);
+  stroke-width: 2;
+}
+
+
+footer{
+    max-width: 20rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 6rem;
+    font-family: "Inter", sans-serif;
+    color: var(--black-2);
+    font-style: normal;
+    font-weight: 450;
+    line-height: 120%; /* 2.55rem */
+    letter-spacing: -0.04rem;
+    text-align: center;
+}
+
+footer a{
+    font-family: "Inter", sans-serif;
+    color: var(--black-3);
+    font-style: normal;
+    font-weight: 450;
+    line-height: 120%; /* 2.55rem */
+    letter-spacing: -0.04rem;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-top: 2rem;
+    font-style: italic;
+}
+
+footer a:hover, footer a:focus{
+    color: var(--blue);
+
+}
+
+
+
 
 /* Custom sca */
 
@@ -597,10 +798,10 @@ video{
 }
 @keyframes nav{
     0%{
-        transform: scale(-50%, 0);
+        transform: scale(50%, 0);
     }
     60%{
-        transform: scale(-50%, 0);
+        transform: scale(50%, 0);
     }
 }
 
@@ -632,6 +833,19 @@ video{
     }
     100%{
         opacity: 1;
+    }
+}
+
+
+@keyframes ext-nav{
+    0%{
+        transform: scale(0%);
+    }
+    70%{
+        transform: scale(0%);
+    }
+    100%{
+        transform: scale(100%);
     }
 }
 
