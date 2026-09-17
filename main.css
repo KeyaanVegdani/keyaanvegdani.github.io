@@ -977,6 +977,7 @@ footer a:hover, footer a:focus{
         grid-template-columns: 1fr;
         text-align: center;
     }
+    
 }
 
 @media(max-width: 30rem){

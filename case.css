@@ -554,3 +554,110 @@ nav:hover{
         background-color: black;
     }
 }
+
+
+
+
+
+
+/* <MEDIA */
+
+@media (max-width: 58.5rem){
+    .three-layers{
+        display: grid;
+        grid-template-columns: 1fr;
+        padding-left: 6rem;
+    padding-right: 6rem;    }
+}
+
+@media (max-width: 45rem){
+    h1{
+    color: var(--white);
+    font-size: 2rem;
+    font-weight: var(--boldest);
+    margin-bottom: var(--heading-margin);
+    max-width: 30rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h2{
+    color: var(--white-2);
+    font-size: 1rem;
+    font-weight: var(--medium);
+
+}
+
+h3{
+    color: var(--white);
+    font-size: 1.25rem;
+    font-weight: var(--biggest);
+    text-align: center;
+}
+
+.big-para{
+    color: var(--white-2);
+    font-size: 1.5rem;
+    font-weight: var(--biggest);
+    text-align: center;
+    max-width: var(--text-width);
+}
+
+.page{
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+}
+
+.two-layers{
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+}
+
+@media (max-width: 34rem){
+    .three-layers{
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+@media (max-width: 28rem){
+    h1{
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: var(--boldest);
+    margin-bottom: var(--heading-margin);
+    max-width: 30rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h2{
+    color: var(--white-2);
+    font-size: 1rem;
+    font-weight: var(--medium);
+
+}
+
+h3{
+    color: var(--white);
+    font-size: 1.25rem;
+    font-weight: var(--biggest);
+    text-align: center;
+}
+
+.big-para{
+    color: var(--white-2);
+    font-size: 1.25rem;
+    font-weight: var(--biggest);
+    text-align: center;
+    max-width: var(--text-width);
+}
+
+.page{
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+}
+
+}
