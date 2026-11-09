@@ -443,6 +443,25 @@ nav:hover{
 }
 
 
+
+
+video::-webkit-media-controls {
+    display: none !important;
+}
+
+/* Hide the large center playback play button */
+video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
+
+/* Hide the bottom control panel play button if it appears */
+video::-webkit-media-controls-play-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
+
+
 @keyframes page-spawn{
     0%{
         opacity: 0;
