@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F9F9F9;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Rotating 3D logo
+   Values come from the Figma "Not-Rotated" -> "Rotated" frames:
+   front face narrows to ~86% (≈30°) and slides right ~4px,
+   back silhouette narrows to ~93% (≈21°) and barely moves.
+
+   Everything runs on one continuous 6s loop with no holds:
+   0% straight -> 50% fully turned -> 100% straight again.
+   The logo hops once on the way out (peak 25%) and once on the
+   way back (peak 75%), and the shadow reacts to both. */
+:root {
+  --logo-cycle: 6s;
+  --logo-sway-ease: cubic-bezier(0.45, 0, 0.55, 1); /* sine-like */
+  --logo-rise-ease: cubic-bezier(0.33, 0, 0.4, 1); /* ease out */
+  --logo-fall-ease: cubic-bezier(0.6, 0, 0.67, 1); /* ease in */
+}
+
+.logo-stage {
+  position: relative;
+}
+
+/* Pixelated WebGL version (see src/app/logo/scene.ts). The canvas is low-res
+   and scaled up with hard edges so each canvas pixel is a solid square. */
+.logo-canvas {
+  position: absolute;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Bounce lives on its own wrapper so the shadow (a sibling) stays on the ground. */
+.logo-bob {
+  position: absolute;
+  inset: 0;
+  animation: logo-bounce var(--logo-cycle) infinite;
+}
+
+@keyframes logo-bounce {
+  0%,
+  50% {
+    transform: translateY(0);
+    animation-timing-function: var(--logo-rise-ease);
+  }
+  25%,
+  75% {
+    transform: translateY(-6px);
+    animation-timing-function: var(--logo-fall-ease);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.logo-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation-duration: var(--logo-cycle);
+  animation-timing-function: var(--logo-sway-ease);
+  animation-iteration-count: infinite;
+}
+
+.logo-back {
+  transform-origin: 108.2px 110px;
+  animation-name: logo-back-sway;
+}
+
+.logo-front {
+  transform-origin: 112.75px 110px;
+  animation-name: logo-front-sway;
+}
+
+@keyframes logo-back-sway {
+  0%,
+  100% {
+    transform: perspective(800px) translateX(0) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(800px) translateX(0.5px) rotateY(21deg);
+  }
+}
+
+@keyframes logo-front-sway {
+  0%,
+  100% {
+    transform: perspective(800px) translateX(0) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(800px) translateX(4.25px) rotateY(30deg);
+  }
+}
+
+/* Shadows, for a low light coming from the upper right (~18° above the ground).
+
+   .logo-cast: the apple silhouette laid flat on the ground behind the logo,
+   stretching away to the left. Built from the silhouette image: squashed
+   vertically (lying on the ground), slanted left with skewX, blurred, and
+   faded toward its far end. Pivot is the apple's base, so it stays attached.
+   When the logo hops, the shadow slips ~3x the hop height further left
+   and gets lighter/softer; when the logo turns it narrows a little. */
+.logo-cast {
+  position: absolute;
+  left: 56px;
+  top: 48px;
+  width: 104.4px;
+  height: 126px;
+  transform-origin: 50% 100%;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.35) 60%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.35) 60%, transparent 100%);
+  pointer-events: none;
+  animation: logo-cast var(--logo-cycle) infinite;
+}
+
+@keyframes logo-cast {
+  0%,
+  100% {
+    transform: translate(0, 0) skewX(50deg) scale(1, 0.32);
+    opacity: 0.38;
+    filter: blur(2.5px);
+    animation-timing-function: var(--logo-rise-ease);
+  }
+  25% {
+    transform: translate(-18px, -2px) skewX(50deg) scale(0.95, 0.32);
+    opacity: 0.26;
+    filter: blur(4px);
+    animation-timing-function: var(--logo-fall-ease);
+  }
+  50% {
+    transform: translate(-1px, 0) skewX(50deg) scale(0.88, 0.32);
+    opacity: 0.38;
+    filter: blur(2.5px);
+    animation-timing-function: var(--logo-rise-ease);
+  }
+  75% {
+    transform: translate(-18px, -2px) skewX(50deg) scale(0.92, 0.32);
+    opacity: 0.26;
+    filter: blur(4px);
+    animation-timing-function: var(--logo-fall-ease);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-bob,
+  .logo-layer,
+  .logo-cast {
+    animation: none;
+  }
+}
