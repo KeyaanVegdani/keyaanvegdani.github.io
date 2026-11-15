@@ -81,6 +81,9 @@ const swayTo = (tx: number, deg: number) =>
 type Layer = { src: string; origin: [number, number]; sway: (t: number) => number[] };
 type LogoDef = {
   x: number; // left of this logo's 222px frame within the stage
+  name: string; // shown in the hover label
+  top: number; // top edge of the artwork in its frame (the label sits above it)
+  left: number; // left edge of the artwork in its frame (for the hover area)
   right: number; // right edge of the artwork in its frame (for the index number)
   y: number; // vertical offset so every logo's base sits on the same ground line
   cycle: number; // ms for one full turn out and back (each logo runs its own loop)
@@ -96,6 +99,9 @@ const LOGOS: LogoDef[] = [
   {
     // Apple: front 99.5 -> 86px wide, +4.25px; back 104.4 -> 97.3px, +0.5px
     x: 0,
+    name: "Apple",
+    top: 46,
+    left: 56,
     right: 162,
     y: 0, // base at y≈174 in its frame: this is the ground line
     cycle: 6000,
@@ -107,6 +113,9 @@ const LOGOS: LogoDef[] = [
   {
     // EA: front 168 -> 133px wide, +4.5px; back 172 -> 153px, +0.5px
     x: 226,
+    name: "Electronic Arts",
+    top: 68,
+    left: 30,
     right: 198,
     y: 20.3, // base at y≈153.7 in its frame -> drop to 174
     cycle: 6700,
@@ -119,6 +128,9 @@ const LOGOS: LogoDef[] = [
     // Bolt: front 48 -> 43px wide (≈27°), +2.75px; back keeps its width and
     // slides -1.5px. Frames are placed so every logo has a ~90px gap.
     x: 429,
+    name: "SFU Surge",
+    top: 49,
+    left: 83,
     right: 137.3,
     y: 2, // base at y≈172 in its frame -> drop to 174
     cycle: 5400,
@@ -132,6 +144,9 @@ const LOGOS: LogoDef[] = [
     // Snowflakes: front 108.8 -> 105.6px wide (≈14°), +2.2px; back keeps its
     // width and stays put.
     x: 604,
+    name: "Symposium 2026",
+    top: 54.4,
+    left: 52.4,
     right: 167.7,
     y: 6.8, // base at y≈167.2 in its frame -> drop to 174
     cycle: 7300,
@@ -141,10 +156,22 @@ const LOGOS: LogoDef[] = [
     shadow: { src: "/snow-shadow.png", px: [286, 280], box: { x: 52.4, y: 54.4, w: 115.3, h: 112.8 } },
   },
 ];
+// Opacity of the other logos while one is hovered, and how quickly it eases.
+const DIM = 0.35;
+const FADE_MS = 90; // time constant: ~90% of the way there in ~200ms
+const BLUR_LEVELS = 1; // how blurred the other logos get (mip levels; ~3x softer)
+const SHADOW_BLUR_PX = 3; // extra blur on their shadows
+
 // Shared ground line every logo's base sits on, in stage px.
 export const GROUND_Y = 174;
 // Where each logo's artwork ends on the right, in stage px.
 export const LOGO_RIGHTS = LOGOS.map((l) => l.x + l.right);
+// Hover label anchor for each logo, in stage px: centred over the artwork,
+// at the top of it (y offset included so it matches what's drawn).
+export const LOGO_LABELS = LOGOS.map((l) => ({ name: l.name, x: l.x + (l.left + l.right) / 2, y: l.y + l.top }));
+// Hover area for each logo, in stage px: its artwork from the top of the
+// tallest logo down to the ground.
+export const LOGO_HITS = LOGOS.map((l) => ({ left: l.x + l.left, width: l.right - l.left, top: 40, height: GROUND_Y - 40 }));
 
 // [translateY px]
 const bounce = track([
@@ -240,6 +267,8 @@ uniform int uMode;          // 0 = logo layer, 1 = shadow
 uniform float uOpacity;
 uniform vec2 uBlur;         // blur radius in uv
 uniform vec3 uShadowColor;
+uniform float uAlpha;       // whole-logo opacity (dimmed while another logo is hovered)
+uniform float uSoft;        // extra mip levels to blur a logo by (0 = sharp)
 uniform float uGain;
 out vec4 outColor;
 
@@ -252,9 +281,12 @@ float bayer4(vec2 p) {
 
 void main() {
   if (uMode == 0) {
-    vec4 c = texture(uTex, vUv);           // premultiplied
-    if (c.a < 0.5) discard;                // hard edge: cell is either in or out
-    outColor = vec4(c.rgb / c.a, 1.0);
+    // Premultiplied. uSoft samples a smaller mip level, which blurs the artwork;
+    // its soft edge is then dithered (like the shadows) rather than cut at 50%.
+    vec4 c = texture(uTex, vUv, uSoft);
+    float edge = mix(0.5, bayer4(gl_FragCoord.xy), clamp(uSoft, 0.0, 1.0));
+    if (c.a < edge || c.a <= 0.0) discard;
+    outColor = vec4(c.rgb / c.a, uAlpha);
     return;
   }
   // Shadow: soft density -> dithered solid pixels.
@@ -267,7 +299,7 @@ void main() {
   float mask = d < 0.6 ? mix(1.0, 0.35, d / 0.6) : mix(0.35, 0.0, (d - 0.6) / 0.4);
   float density = clamp(a * mask * uOpacity * uGain, 0.0, 1.0);
   if (density <= bayer4(gl_FragCoord.xy)) discard;
-  outColor = vec4(uShadowColor, 1.0);
+  outColor = vec4(uShadowColor, uAlpha);
 }`;
 
 // Post pass: reads the low-res scene and splits the colour channels sideways.
@@ -298,8 +330,9 @@ vec3 at(ivec2 p) {
   ivec2 size = textureSize(uScene, 0);
   p = clamp(p, ivec2(0), size - 1);
   vec4 c = texelFetch(uScene, p, 0);
-  // Nothing drawn here: show what the page has behind this cell.
-  return c.a > 0.5 ? c.rgb : sky(size.y - 1 - p.y);
+  // Drawn cells sit over the page background at their opacity; empty cells
+  // (alpha 0) just show the background.
+  return c.a > 0.0 ? mix(sky(size.y - 1 - p.y), c.rgb, c.a) : sky(size.y - 1 - p.y);
 }
 // Horizontal sample at a fractional cell offset: blends the two cells it falls
 // between, so e.g. 0.5 gives a half-strength fringe. Output stays one solid
@@ -418,6 +451,8 @@ export async function startLogoScene(canvas: HTMLCanvasElement, opts: { animate:
   const uMode = u("uMode");
   const uOpacity = u("uOpacity");
   const uBlur = u("uBlur");
+  const uAlpha = u("uAlpha");
+  const uSoft = u("uSoft");
   gl.uniform1i(u("uTex"), 0);
   gl.uniform3fv(u("uShadowColor"), SHADOW_RGB);
   gl.uniform1f(u("uGain"), SHADOW_DENSITY_GAIN);
@@ -473,7 +508,7 @@ export async function startLogoScene(canvas: HTMLCanvasElement, opts: { animate:
     gl!.uniform4f(uRect, box.x, box.y, box.w, box.h);
     gl!.uniform1i(uMode, 1);
     gl!.uniform1f(uOpacity, cop);
-    gl!.uniform2f(uBlur, cblur / box.w, cblur / box.h);
+    gl!.uniform2f(uBlur, (cblur + shadowBlurBoost) / box.w, (cblur + shadowBlurBoost) / box.h);
     gl!.bindTexture(gl!.TEXTURE_2D, tex.shadow);
     gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
   }
@@ -495,10 +530,39 @@ export async function startLogoScene(canvas: HTMLCanvasElement, opts: { animate:
   const panel = canvas.closest("main") ?? document.body;
   const readBackground = () => (bg = pageBackground(panel) ?? bg);
 
-  // `ms` is time since start, or null for the still (reduced-motion) pose.
-  const progress = (logo: LogoDef, ms: number | null) => (ms === null ? 0 : (ms / logo.cycle + logo.phase) % 1);
+  // Hover focus: while one logo is focused the others ease out of the way:
+  // they slow to a stop, fade to DIM opacity and blur. `dim[i]` runs 0..1.
+  const dim = LOGOS.map(() => 0);
+  let focus: number | null = null;
+  const target = (i: number) => (focus === null || focus === i ? 0 : 1);
+  // Eases each logo's dim amount toward its target; returns true while still moving.
+  function stepFade(dt: number) {
+    const k = 1 - Math.exp(-dt / FADE_MS);
+    let moving = false;
+    dim.forEach((d, i) => {
+      const next = d + (target(i) - d) * k;
+      dim[i] = Math.abs(target(i) - next) < 0.002 ? target(i) : next;
+      if (dim[i] !== target(i)) moving = true;
+    });
+    return moving;
+  }
 
-  function render(ms: number | null) {
+  // Each logo keeps its own clock, which runs slower as it dims and stops
+  // when fully dimmed, so paused logos pick up exactly where they left off.
+  const clock = LOGOS.map(() => 0);
+  const advance = (dt: number) => dim.forEach((d, i) => (clock[i] += dt * (1 - d)));
+
+  // Turn progress 0..1 for logo i; `still` gives the rest pose (reduced motion).
+  const progress = (i: number, still: boolean) => (still ? 0 : (clock[i] / LOGOS[i].cycle + LOGOS[i].phase) % 1);
+
+  let shadowBlurBoost = 0;
+  function setLook(i: number) {
+    gl!.uniform1f(uAlpha, 1 - dim[i] * (1 - DIM));
+    gl!.uniform1f(uSoft, dim[i] * BLUR_LEVELS);
+    shadowBlurBoost = dim[i] * SHADOW_BLUR_PX;
+  }
+
+  function render(still: boolean) {
     gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
     gl!.useProgram(prog);
     gl!.viewport(0, 0, canvas.width, canvas.height);
@@ -508,8 +572,14 @@ export async function startLogoScene(canvas: HTMLCanvasElement, opts: { animate:
     gl!.clear(gl!.COLOR_BUFFER_BIT);
 
     // All shadows first, so one logo's shadow never draws over a neighbouring logo.
-    LOGOS.forEach((logo, i) => drawShadow(logo, textures[i], progress(logo, ms)));
-    LOGOS.forEach((logo, i) => drawLogo(logo, textures[i], progress(logo, ms)));
+    LOGOS.forEach((logo, i) => {
+      setLook(i);
+      drawShadow(logo, textures[i], progress(i, still));
+    });
+    LOGOS.forEach((logo, i) => {
+      setLook(i);
+      drawLogo(logo, textures[i], progress(i, still));
+    });
 
     // Aberration pass to the screen.
     gl!.bindFramebuffer(gl!.FRAMEBUFFER, null);
@@ -523,15 +593,41 @@ export async function startLogoScene(canvas: HTMLCanvasElement, opts: { animate:
   }
 
   let raf = 0;
+  let wake = () => {};
   if (opts.animate) {
-    const start = performance.now();
+    let last = performance.now();
     const loop = (now: number) => {
-      render(now - start);
+      const dt = now - last;
+      stepFade(dt);
+      advance(dt);
+      last = now;
+      render(false);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
   } else {
-    render(null);
+    // Still pose: only redraw while a hover fade is running.
+    let last = 0;
+    const fadeLoop = (now: number) => {
+      const moving = stepFade(last ? now - last : 16);
+      last = now;
+      render(true);
+      raf = moving ? requestAnimationFrame(fadeLoop) : 0;
+    };
+    wake = () => {
+      if (!raf) {
+        last = 0;
+        raf = requestAnimationFrame(fadeLoop);
+      }
+    };
+    render(true);
   }
-  return () => cancelAnimationFrame(raf);
+  return {
+    stop: () => cancelAnimationFrame(raf),
+    /** Emphasise logo `i` (others pause, fade and blur), or null to show all normally. */
+    setFocus(i: number | null) {
+      focus = i;
+      wake();
+    },
+  };
 }
