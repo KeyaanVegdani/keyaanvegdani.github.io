@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useRef, useState } from "react";
-import { GROUND_Y, LOGO_HITS, LOGO_LABELS, LOGO_RIGHTS, PIXEL, REGION, STAGE_W, startLogoScene } from "./logo/scene";
+import { DIVIDERS, GROUND_Y, LOGO_HITS, LOGO_LABELS, LOGO_RIGHTS, PIXEL, REGION, STAGE_W, startLogoScene } from "./logo/scene";
 
 // The logos and their shadows are rendered by a WebGL shader into a low-res canvas
 // so they come out as solid, chunky pixels (see logo/scene.ts).
@@ -10,6 +10,7 @@ import { GROUND_Y, LOGO_HITS, LOGO_LABELS, LOGO_RIGHTS, PIXEL, REGION, STAGE_W, 
 // (Apple logo only).
 const SIZE = 222;
 const LABEL_GAP = 24; // px between the top of a logo and the bottom of its label
+const DIVIDER_H = 80; // px; its bottom sits 8px above the ground line
 const INDEX_GAP = 8; // px between a logo's right edge and its number
 
 export default function RotatingLogo() {
@@ -18,6 +19,23 @@ export default function RotatingLogo() {
   // Logo under the pointer: it stays full strength, the rest fade back.
   const [hovered, setHovered] = useState<number | null>(null);
   const setFocusRef = useRef<(i: number | null) => void>(() => {});
+  const followRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Nudges logo i's label toward the cursor: -1..1 across the hover area,
+  // turned into a small offset and tilt (eased by a CSS transition). null recentres it.
+  const followCursor = (i: number, e: React.PointerEvent<HTMLDivElement> | null) => {
+    const el = followRefs.current[i];
+    if (!el) return;
+    let x = 0;
+    let y = 0;
+    if (e) {
+      const r = e.currentTarget.getBoundingClientRect();
+      x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      y = ((e.clientY - r.top) / r.height) * 2 - 1;
+    }
+    el.style.setProperty("--follow-x", x.toFixed(3));
+    el.style.setProperty("--follow-y", y.toFixed(3));
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,20 +67,31 @@ export default function RotatingLogo() {
       <canvas
         ref={canvasRef}
         role="img"
-        aria-label="Apple, EA and two more logos"
+        aria-label="Apple, Electronic Arts, SFU Surge, Symposium 2026 and Thoughts logos"
         width={REGION.w / PIXEL}
         height={REGION.h / PIXEL}
         className="logo-canvas"
         style={{ left: REGION.x, top: REGION.y, width: REGION.w, height: REGION.h }}
       />
+      {/* Divider lines between groups of logos. */}
+      {DIVIDERS.map((x) => (
+        <span key={x} aria-hidden className="logo-divider" style={{ left: x, top: GROUND_Y - DIVIDER_H - 8, height: DIVIDER_H }} />
+      ))}
       {/* Hover areas over each logo (the canvas itself is one image). */}
       {LOGO_HITS.map((hit, i) => (
         <div
           key={i}
           className="logo-hit"
           style={hit}
-          onPointerEnter={() => setHovered(i)}
-          onPointerLeave={() => setHovered((h) => (h === i ? null : h))}
+          onPointerEnter={(e) => {
+            followCursor(i, e);
+            setHovered(i);
+          }}
+          onPointerMove={(e) => followCursor(i, e)}
+          onPointerLeave={() => {
+            followCursor(i, null);
+            setHovered((h) => (h === i ? null : h));
+          }}
         />
       ))}
       {/* Name labels: one per logo, shown above it while it's hovered. */}
@@ -73,7 +102,14 @@ export default function RotatingLogo() {
           className={`logo-label${hovered === i ? " is-visible" : ""}`}
           style={{ left: label.x, top: label.y - LABEL_GAP }}
         >
-          <span className="logo-label-pill">{label.name}</span>
+          <span
+            className="logo-label-follow"
+            ref={(el) => {
+              followRefs.current[i] = el;
+            }}
+          >
+            <span className="logo-label-pill">{label.name}</span>
+          </span>
         </div>
       ))}
       {/* Index numbers: just right of each logo, bottoms on the ground line. */}

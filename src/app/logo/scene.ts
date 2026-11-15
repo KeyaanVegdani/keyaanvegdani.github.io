@@ -24,9 +24,9 @@ const CA_CELLS = 0.5;
 // Region of the stage the canvas covers, in stage px. The stage is a row of
 // 222px Figma frames (see LOGOS). It extends left of the first frame because
 // shadows stretch that way.
-export const REGION = { x: -99, y: 0, w: 926, h: 222 };
+export const REGION = { x: -99, y: 0, w: 1200, h: 222 };
 // Width of the laid-out row of logos (used for centring the stage).
-export const STAGE_W = 826;
+export const STAGE_W = 1099;
 
 const PERSPECTIVE = 800;
 const SHADOW_SKEW_DEG = 68;
@@ -90,7 +90,12 @@ type LogoDef = {
   phase: number; // 0..1 starting point in that loop, so they don't start in step
   back: Layer;
   front: Layer;
-  shadow: { src: string; px: [number, number]; box: { x: number; y: number; w: number; h: number } };
+  shadow: {
+    src: string;
+    px: [number, number];
+    box: { x: number; y: number; w: number; h: number };
+    length?: number; // 0..1 multiplier on how far the shadow stretches (default 1)
+  };
 };
 
 // Turn amounts come from each logo's Figma "Not-Rotated" -> "Rotated" frames:
@@ -141,7 +146,7 @@ const LOGOS: LogoDef[] = [
     shadow: { src: "/bolt-shadow.svg", px: [218, 492], box: { x: 83, y: 49, w: 54.34, h: 123 } },
   },
   {
-    // Snowflakes: front 108.8 -> 105.6px wide (≈14°), +2.2px; back keeps its
+    // Snowflakes: front 108.8 -> 99.8px wide (≈23.5°), +5.1px; back keeps its
     // width and stays put.
     x: 604,
     name: "Symposium 2026",
@@ -152,8 +157,29 @@ const LOGOS: LogoDef[] = [
     cycle: 7300,
     phase: 0.15,
     back: { src: "/snow-back.svg", origin: [110.04, 110.8], sway: swayTo(0, 0) },
-    front: { src: "/snow-front.svg", origin: [112.4, 110.8], sway: swayTo(2.2, 14) },
+    front: { src: "/snow-front.svg", origin: [112.4, 110.8], sway: swayTo(5.1, 23.5) },
     shadow: { src: "/snow-shadow.png", px: [286, 280], box: { x: 52.4, y: 54.4, w: 115.3, h: 112.8 } },
+  },
+  {
+    // Thoughts (notepad): back 94 -> 87.9px wide (≈21°), +5px;
+    // front 88.3 -> 74.8px (≈32°), +7.5px. Sits past the divider (DIVIDERS).
+    x: 877,
+    name: "Thoughts",
+    top: 54.5,
+    left: 58.7,
+    right: 156.7,
+    y: 5.7, // base at y≈168.3 in its frame -> drop to 174
+    cycle: 6200,
+    phase: 0.8,
+    back: { src: "/thoughts-back.svg", origin: [107.7, 111], sway: swayTo(5, 21) },
+    front: { src: "/thoughts-front.svg", origin: [109.5, 111], sway: swayTo(7.5, 32) },
+    // Silhouette made from the back layer (thoughts-back.svg cropped tight).
+    shadow: {
+      src: "/thoughts-shadow.svg",
+      px: [196, 228],
+      box: { x: 58.7, y: 54.5, w: 98, h: 113.8 },
+      length: 0.6, // shorter than the others: a tall block casts a long one
+    },
   },
 ];
 // Opacity of the other logos while one is hovered, and how quickly it eases.
@@ -161,6 +187,10 @@ const DIM = 0.35;
 const FADE_MS = 90; // time constant: ~90% of the way there in ~200ms
 const BLUR_LEVELS = 1; // how blurred the other logos get (mip levels; ~3x softer)
 const SHADOW_BLUR_PX = 3; // extra blur on their shadows
+
+// Thin vertical divider lines between groups of logos: x in stage px.
+// One sits midway between Symposium 2026 (4) and Thoughts (5).
+export const DIVIDERS = [854];
 
 // Shared ground line every logo's base sits on, in stage px.
 export const GROUND_Y = 174;
@@ -501,7 +531,7 @@ export async function startLogoScene(canvas: HTMLCanvasElement, opts: { animate:
         translate(ox, oy),
         translate(ctx, cty),
         skewX(SHADOW_SKEW_DEG),
-        scale(csx, SHADOW_SQUASH),
+        scale(csx, SHADOW_SQUASH * (logo.shadow.length ?? 1)),
         translate(-ox, -oy),
       ),
     );

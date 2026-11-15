@@ -114,6 +114,272 @@ body {
   color: #2a2b39;
   text-decoration: underline wavy;
   text-decoration-thickness: 6%;
+  cursor: default;
+}
+
+/* Little ring at the top right of "magical"; fills in on hover. Inline-block
+   so the wavy underline doesn't run under it. */
+.intro-dot {
+  display: inline-block;
+  width: 0.32em;
+  height: 0.32em;
+  margin-left: 0.1em;
+  vertical-align: 0.42em;
+  border: 0.075em solid currentColor;
+  border-radius: 50%;
+}
+
+/* Hover: the word, underline and dot switch to blue instantly (no transition). */
+.intro-magic:hover {
+  color: #444ef3;
+}
+
+.intro-magic:hover .intro-dot {
+  background: currentColor;
+}
+
+/* iPod icon in the bottom-left of the panel (IpodPopup.tsx). Just the icon;
+   the padding is an invisible, easier-to-hit click area. Goes dark like the
+   "magical" word, instantly on hover. */
+.ipod-button {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  padding: 8px;
+  color: #696b7c;
+  cursor: pointer;
+}
+
+.ipod-button:hover {
+  color: #2a2b39;
+}
+
+/* The popup panel (flat; only the iPod inside is 3D). Figma 53:732 / 53:710.
+   Opens above the button; --ipod-scale shrinks it on short windows. */
+.ipod-popup {
+  position: absolute;
+  left: 24px;
+  bottom: 58px;
+  z-index: 40;
+  width: 366px;
+  height: 558px;
+  border: 1px solid #e1e1e1;
+  border-radius: 20px;
+  background: rgba(239, 239, 239, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  transform-origin: bottom left;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(var(--move-x, 0px), calc(var(--move-y, 0px) + 8px)) scale(calc(var(--ipod-scale, 1) * 0.97));
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.3s;
+}
+
+.ipod-popup.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(var(--move-x, 0px), var(--move-y, 0px)) scale(var(--ipod-scale, 1));
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Top bar, also the handle for moving the panel around: the whole strip
+   across the top. Its 22px content row sits 19px down, as in Figma. */
+/* While being moved, follow the pointer exactly (no easing). */
+.ipod-popup.is-moving {
+  transition: none;
+}
+
+.ipod-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 19px 26px;
+  cursor: move;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: -0.24px;
+  color: #696b7c;
+}
+
+.ipod-header img {
+  pointer-events: none;
+}
+
+.ipod-close {
+  display: flex;
+  padding: 6px;
+  margin: -6px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Drag area: the whole panel. Nothing in it is selectable, so spinning the
+   iPod never highlights the wheel text. Colours snapped to the iPod's palette
+   (#ipod-palette, DitherFilter.tsx) for harsh pixel-art colours. */
+.ipod-stage {
+  position: absolute;
+  inset: 0;
+  filter: url(#ipod-palette);
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  touch-action: pan-y;
+  outline: none;
+}
+
+.ipod-stage:active {
+  cursor: grabbing;
+}
+
+/* The two stacked copies of the iPod (IpodPopup.tsx), each turned into
+   pixel art by its filter (DitherFilter.tsx). Perspective centred on the iPod. */
+.ipod-layer {
+  position: absolute;
+  inset: 0;
+  perspective: 1000px;
+  perspective-origin: 182px 292px;
+  pointer-events: none;
+}
+
+.ipod-layer-color {
+  filter: url(#ipod-pixels);
+}
+
+.ipod-layer-shade {
+  filter: url(#ipod-shade);
+}
+
+.ipod-layer-shade .ipod-face {
+  border: 0;
+  background: none;
+}
+
+.ipod-body {
+  position: absolute;
+  left: 58px;
+  top: 92px;
+  transform-style: preserve-3d;
+}
+
+.ipod-rim {
+  position: absolute;
+  background: #ffd240;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Shading layer: black at the surface's darkness (opacity, set from JS); the
+   filter turns it into dithered dark pixels. */
+.ipod-shade-surface {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+}
+
+.ipod-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.ipod-front {
+  border: 1px solid #ffc300;
+  background: #ffe252;
+}
+
+.ipod-back img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ipod-screen {
+  position: absolute;
+  left: 15px;
+  top: 16px;
+  width: 216px;
+  height: 150px;
+  border: 2px solid #2a2b39;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+.ipod-wheel {
+  position: absolute;
+  left: 33px;
+  top: 190px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: #ffc146;
+}
+
+.ipod-wheel-center {
+  position: absolute;
+  left: 52px;
+  top: 52px;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #ffd65b;
+}
+
+.ipod-menu {
+  position: absolute;
+  left: 72px;
+  top: 12px;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: -0.24px;
+  color: #f9f9f9;
+}
+
+.ipod-wheel img {
+  position: absolute;
+  height: 9.525px;
+}
+
+.ipod-prev {
+  left: 9px;
+  top: 85px;
+  width: 9.5px;
+  transform: scaleX(-1);
+}
+
+.ipod-next {
+  left: 158px;
+  top: 85px;
+  width: 9.5px;
+}
+
+.ipod-play {
+  left: 86px;
+  top: 163px;
+  width: 7.5px;
 }
 
 /* Small index number at the bottom-right of each logo (see RotatingLogo.tsx). */
@@ -131,6 +397,14 @@ body {
 /* While any logo is hovered, all the numbers fade away. */
 .logo-index.is-hidden {
   opacity: 0;
+}
+
+/* Subtle vertical line between groups of logos (RotatingLogo.tsx). */
+.logo-divider {
+  position: absolute;
+  width: 2px;
+  background: #E1E1E1;
+  pointer-events: none;
 }
 
 /* Hover label above a logo (RotatingLogo.tsx); design from Figma node 50:4.
@@ -153,6 +427,22 @@ body {
   opacity: 1;
   filter: blur(0);
   transform: translate(-50%, -100%);
+}
+
+/* Follows the cursor across the hovered logo (RotatingLogo.tsx sets
+   --follow-x/--follow-y from -1 to 1). The transition makes it trail behind
+   the pointer a little; the tilt leans it toward the side the cursor is on. */
+.logo-label-follow {
+  --follow-range-x: 14px;
+  --follow-range-y: 6px;
+  --follow-tilt: 4deg;
+  display: block;
+  transform: translate(
+      calc(var(--follow-x, 0) * var(--follow-range-x)),
+      calc(var(--follow-y, 0) * var(--follow-range-y))
+    )
+    rotate(calc(var(--follow-x, 0) * var(--follow-tilt)));
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .logo-label-pill {
@@ -342,6 +632,14 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .logo-label-follow {
+    transform: none;
+  }
+
+  .ipod-popup {
+    transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+  }
+
   .logo-bob,
   .logo-layer,
   .logo-cast,

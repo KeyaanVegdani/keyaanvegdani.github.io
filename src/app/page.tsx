@@ -1,4 +1,5 @@
 import DitherFilter from "./DitherFilter";
+import IpodPopup from "./IpodPopup";
 import RotatingLogo from "./RotatingLogo";
 import Snowfall from "./Snowfall";
 import { skyCss } from "./sky";
@@ -18,8 +19,12 @@ export default function Home() {
       {/* Intro line under the logos. Design: Figma node 50:17. */}
       <p className="intro-text">
         Keyaan is a motion &amp; brand designer, working to make our world just a bit more{" "}
-        <span className="intro-magic">magical</span>
+        <span className="intro-magic">
+          magical
+          <span className="intro-dot" aria-hidden />
+        </span>
       </p>
+      <IpodPopup />
     </main>
   );
 }

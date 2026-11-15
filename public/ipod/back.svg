@@ -1,0 +1,22 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="248" height="400" viewBox="0 0 248 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 23">
+<rect x="0.5" y="0.5" width="247" height="399" rx="15.5" fill="#FFE252"/>
+<rect x="0.5" y="0.5" width="247" height="399" rx="15.5" stroke="#FFC400"/>
+<g id="Group 25">
+<circle id="Ellipse 13" cx="70.0432" cy="179.856" r="17.5" fill="#2A2B39"/>
+<circle id="Ellipse 14" cx="74.8227" cy="175.422" r="7" fill="#F9F9F9"/>
+</g>
+<g id="Group 26">
+<circle id="Ellipse 13_2" cx="174.842" cy="178.363" r="17.5" fill="#2A2B39"/>
+<circle id="Ellipse 14_2" cx="179.622" cy="173.93" r="7" fill="#F9F9F9"/>
+</g>
+<ellipse id="Ellipse 15" cx="124.596" cy="192.595" rx="8.5" ry="3" transform="rotate(0.258142 124.596 192.595)" fill="#2A2B39"/>
+<circle id="Ellipse 16" cx="51.0388" cy="208.991" r="11.5" fill="#F1364C"/>
+<circle id="Ellipse 17" cx="197.574" cy="206.026" r="11.5" fill="#F1364C"/>
+<g id="Group 28">
+<path id="Subtract" d="M125.434 201.152C125.351 206.047 132.147 210.147 140.675 210.389C141.445 212.659 141.839 215.418 141.779 218.742C141.544 231.833 130.143 242.243 124.698 242.146C119.252 242.048 108.232 231.234 108.468 218.144C108.527 214.818 109.098 212.076 110.065 209.837C118.507 209.842 125.341 206.01 125.434 201.153L125.434 201.152Z" fill="#9C1B59"/>
+<path id="Subtract_2" d="M108.88 222.963C110.919 233.787 119.938 242.06 124.698 242.146C129.457 242.231 138.768 234.288 141.194 223.544C135.694 218.633 114.582 216.657 108.88 222.963Z" fill="#F75583"/>
+<path id="Union" d="M103.185 209.025C105.048 209.508 107.1 209.794 109.258 209.833C117.926 209.989 125.025 206.1 125.114 201.147C125.025 206.1 131.98 210.241 140.648 210.397C142.806 210.436 144.866 210.224 146.746 209.807" stroke-width="2.56285" stroke-linecap="round" stroke-linejoin="round" stroke="#2A2B39"/>
+</g>
+</g>
+</svg>

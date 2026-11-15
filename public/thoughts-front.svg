@@ -1,0 +1,49 @@
+<svg width="222" height="222" viewBox="0 0 222 222" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 24">
+<rect id="Rectangle 101_2" x="65.3094" y="71.8689" width="73.2053" height="90.6654" rx="3.5" transform="rotate(-7.80424 65.3094 71.8689)" fill="url(#paint0_linear_0_1)" stroke="url(#paint1_linear_0_1)"/>
+<g id="Rectangle 103_2" opacity="0.1" filter="url(#filter1_f_0_1)">
+<rect x="68.3389" y="71.9414" width="71.4603" height="88.2745" rx="4" transform="rotate(-7.80424 68.3389 71.9414)" fill="#2A2B39"/>
+</g>
+<rect id="Rectangle 102_2" x="68.8015" y="67.5036" width="73.2053" height="90.6654" rx="3.5" transform="rotate(-7.80424 68.8015 67.5036)" fill="url(#paint2_linear_0_1)" stroke="url(#paint3_linear_0_1)"/>
+<g id="Group 22_2">
+<rect id="Rectangle 108_2" x="84.9238" y="81.0879" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 84.9238 81.0879)" fill="#B3A084"/>
+<rect id="Rectangle 110_2" x="85.9316" y="87.998" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 85.9316 87.998)" fill="#B3A084"/>
+<rect id="Rectangle 111_2" x="86.9404" y="94.9102" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 86.9404 94.9102)" fill="#B3A084"/>
+<rect id="Rectangle 112_2" x="87.9482" y="101.822" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 87.9482 101.822)" fill="#B3A084"/>
+<rect id="Rectangle 113_2" x="88.9561" y="108.732" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 88.9561 108.732)" fill="#B3A084"/>
+<rect id="Rectangle 114_2" x="89.9629" y="115.643" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 89.9629 115.643)" fill="#B3A084"/>
+<rect id="Rectangle 115_2" x="90.9717" y="122.555" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 90.9717 122.555)" fill="#B3A084"/>
+<rect id="Rectangle 116_2" x="91.9795" y="129.467" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 91.9795 129.467)" fill="#B3A084"/>
+<rect id="Rectangle 117_2" x="92.9873" y="136.377" width="46.2692" height="1.74601" rx="0.873004" transform="rotate(-7.80115 92.9873 136.377)" fill="#B3A084"/>
+</g>
+</g>
+
+<defs>
+<filter id="filter0_f_0_1" x="61.0977" y="58.4844" width="93.7754" height="108.15" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="1" result="effect1_foregroundBlur_0_1"/>
+</filter>
+<filter id="filter1_f_0_1" x="66.8447" y="60.7441" width="85.7734" height="100.148" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="1" result="effect1_foregroundBlur_0_1"/>
+</filter>
+<linearGradient id="paint0_linear_0_1" x1="101.849" y1="71.4414" x2="101.849" y2="163.107" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8F5F0"/>
+<stop offset="1" stop-color="#F8E2AF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_1" x1="101.849" y1="71.4414" x2="101.849" y2="163.107" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8E3B1"/>
+<stop offset="1" stop-color="#F8F3EC"/>
+</linearGradient>
+<linearGradient id="paint2_linear_0_1" x1="105.341" y1="67.0762" x2="105.341" y2="158.742" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8F5F0"/>
+<stop offset="1" stop-color="#F8E2AF"/>
+</linearGradient>
+<linearGradient id="paint3_linear_0_1" x1="105.341" y1="67.0762" x2="105.341" y2="158.742" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8E3B1"/>
+<stop offset="1" stop-color="#F8F3EC"/>
+</linearGradient>
+</defs>
+</svg>
