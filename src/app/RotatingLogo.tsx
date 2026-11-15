@@ -2,13 +2,14 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useRef, useState } from "react";
-import { PIXEL, REGION, STAGE_W, startLogoScene } from "./logo/scene";
+import { GROUND_Y, LOGO_RIGHTS, PIXEL, REGION, STAGE_W, startLogoScene } from "./logo/scene";
 
 // The logos and their shadows are rendered by a WebGL shader into a low-res canvas
 // so they come out as solid, chunky pixels (see logo/scene.ts).
 // If WebGL2 isn't available we fall back to the smooth CSS version below
 // (Apple logo only).
 const SIZE = 222;
+const INDEX_GAP = 8; // px between a logo's right edge and its number
 
 export default function RotatingLogo() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,12 +41,23 @@ export default function RotatingLogo() {
       <canvas
         ref={canvasRef}
         role="img"
-        aria-label="Apple and EA logos"
+        aria-label="Apple, EA and two more logos"
         width={REGION.w / PIXEL}
         height={REGION.h / PIXEL}
         className="logo-canvas"
         style={{ left: REGION.x, top: REGION.y, width: REGION.w, height: REGION.h }}
       />
+      {/* Index numbers: just right of each logo, bottoms on the ground line. */}
+      {LOGO_RIGHTS.map((right, i) => (
+        <span
+          key={i}
+          aria-hidden
+          className="logo-index"
+          style={{ left: right + INDEX_GAP, top: GROUND_Y, transform: "translateY(-100%)" }}
+        >
+          {i + 1}
+        </span>
+      ))}
     </div>
   );
 }

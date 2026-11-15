@@ -2,6 +2,9 @@
 
 :root {
   --background: #F9F9F9;
+  --frame: #F3F3F3; /* page edge around the main container */
+  --frame-stroke: #E1E1E1;
+  --index-blur: 0.2px; /* softness of the small index numbers under the logos */
   --foreground: #171717;
 }
 
@@ -10,12 +13,77 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-dm-mono: var(--font-dm-mono);
 }
 
 body {
-  background: var(--background);
+  background: var(--frame);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Main content panel: sits 1rem in from the top and sides of the window,
+   runs off the bottom, with rounded top corners and a thin outline. Its
+   background is --background with the sky gradient on top (page.tsx). */
+.main-frame {
+  background-color: var(--background);
+  border: 1px solid var(--frame-stroke);
+  border-bottom: 0;
+  border-radius: 1.5rem 1.5rem 0 0;
+  overflow: hidden;
+}
+
+/* Falling snow in the main panel (Snowfall.tsx). Flakes blur/fade in above
+   the logos and out below them; the path and fades are set per flake in JS. */
+.snowfall {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  filter: url(#dither); /* dithered fades, like the logo shadows (DitherFilter.tsx) */
+}
+
+.snowflake {
+  position: absolute;
+  top: 0;
+  opacity: 0; /* until its first animation starts */
+}
+
+.snowflake img {
+  display: block;
+  animation: snow-sway var(--sway-time) ease-in-out infinite alternate;
+}
+
+@keyframes snow-sway {
+  from {
+    transform: translateX(calc(var(--sway) * -1)) scaleX(var(--flip, 1));
+  }
+  to {
+    transform: translateX(var(--sway)) scaleX(var(--flip, 1));
+  }
+}
+
+/* Small index number at the bottom-right of each logo (see RotatingLogo.tsx). */
+.logo-index {
+  position: absolute;
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 1rem;
+  line-height: 1;
+  color: #69696d;
+  filter: blur(var(--index-blur));
+  pointer-events: none;
+}
+
+/* Paper texture laid over the whole site. Fixed so it covers the viewport
+   while scrolling; clicks pass straight through it. */
+.paper-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: url("/paper-texture.jpg") center / cover;
+  mix-blend-mode: multiply;
+  opacity: 0.3;
 }
 
 /* Rotating 3D logo
@@ -28,7 +96,7 @@ body {
    The logo hops once on the way out (peak 25%) and once on the
    way back (peak 75%), and the shadow reacts to both. */
 :root {
-  --logo-cycle: 6s;
+  --logo-cycle: 1.5s;
   --logo-sway-ease: cubic-bezier(0.45, 0, 0.55, 1); /* sine-like */
   --logo-rise-ease: cubic-bezier(0.33, 0, 0.4, 1); /* ease out */
   --logo-fall-ease: cubic-bezier(0.6, 0, 0.67, 1); /* ease in */
@@ -161,7 +229,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .logo-bob,
   .logo-layer,
-  .logo-cast {
+  .logo-cast,
+  .snowflake,
+  .snowflake img {
     animation: none;
   }
 }
