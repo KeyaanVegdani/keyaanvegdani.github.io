@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useRef, useState } from "react";
+import { isMuted } from "./sound";
 import { DIVIDERS, GROUND_Y, LOGO_HITS, LOGO_LABELS, LOGO_RIGHTS, PIXEL, REGION, STAGE_W, startLogoScene } from "./logo/scene";
 
 // The logos and their shadows are rendered by a WebGL shader into a low-res canvas
@@ -18,6 +19,19 @@ export default function RotatingLogo() {
   const [fallback, setFallback] = useState(false);
   // Logo under the pointer: it stays full strength, the rest fade back.
   const [hovered, setHovered] = useState<number | null>(null);
+  // Little sound each time the pointer moves onto a logo. Each play is its
+  // own copy so sweeping across the row overlaps instead of cutting off.
+  const hoverSoundRef = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    const a = new Audio("/logo-hover.mp3");
+    a.preload = "auto";
+    hoverSoundRef.current = a;
+  }, []);
+  const playHover = () => {
+    const a = hoverSoundRef.current;
+    if (!a || isMuted()) return;
+    (a.cloneNode() as HTMLAudioElement).play().catch(() => {});
+  };
   const setFocusRef = useRef<(i: number | null) => void>(() => {});
   const followRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
@@ -86,6 +100,7 @@ export default function RotatingLogo() {
           onPointerEnter={(e) => {
             followCursor(i, e);
             setHovered(i);
+            playHover();
           }}
           onPointerMove={(e) => followCursor(i, e)}
           onPointerLeave={() => {

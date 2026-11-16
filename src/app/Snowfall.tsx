@@ -23,6 +23,9 @@ const VANISH = [75, 400];
 const SPEED = [18, 60]; // fall speed, px per second
 const FADE_PX = 50; // distance over which a flake blurs/fades in or out
 const BLUR = 6; // px of blur while faded
+// Room around each flake (px) for its sway and blur, so its dither filter
+// (globals.css .snowflake) doesn't cut them off. Matches the CSS padding.
+const PAD = 30;
 
 type Flake = {
   src: string;
@@ -47,8 +50,12 @@ function makeFlakes(): Flake[] {
 /** One fall: fade in at a random spot in APPEAR, fall, fade out in VANISH. Loops forever with new spots. */
 function fall(el: HTMLElement, panel: HTMLElement, first: boolean) {
   const mid = panel.clientHeight / 2;
-  const start = mid + rand(APPEAR[0], APPEAR[1]);
-  const end = mid + rand(VANISH[0], VANISH[1]);
+  // Kept inside the panel (with room for the flake itself), so a flake is
+  // never cut off by the panel's top or bottom edge on short windows.
+  const flakeH = el.offsetHeight - 2 * PAD; // the flake itself, without its padding
+  const bottom = panel.clientHeight - flakeH - 8;
+  const start = Math.max(0, mid + rand(APPEAR[0], APPEAR[1]));
+  const end = Math.max(start + FADE_PX * 2, Math.min(bottom, mid + rand(VANISH[0], VANISH[1])));
   const dist = end - start;
   const fade = Math.min(FADE_PX, dist / 3) / dist; // fraction of the path spent fading
   const hidden = { opacity: 0, filter: `blur(${BLUR}px)` };
@@ -56,33 +63,37 @@ function fall(el: HTMLElement, panel: HTMLElement, first: boolean) {
   el.style.left = `${rand(0, 100)}%`;
   // Mirror about half the flakes so the same designs don't repeat as obviously.
   el.style.setProperty("--flip", Math.random() < 0.5 ? "-1" : "1");
+  const timing: KeyframeAnimationOptions = {
+    duration: (dist / rand(SPEED[0], SPEED[1])) * 1000,
+    easing: "linear",
+    fill: "both",
+  };
+  // The flake moves (outer element) and blurs/fades (inner element)
+  // separately, so the dither on the outer element turns the fades into
+  // speckles. Both share the same timing.
   const anim = el.animate(
     [
-      { transform: `translateY(${start}px)`, ...hidden, offset: 0 },
-      {
-        transform: `translateY(${start + dist * fade}px)`,
-        ...shown,
-        offset: fade,
-      },
-      {
-        transform: `translateY(${end - dist * fade}px)`,
-        ...shown,
-        offset: 1 - fade,
-      },
-      { transform: `translateY(${end}px)`, ...hidden, offset: 1 },
+      { transform: `translateY(${start}px)`, offset: 0 },
+      { transform: `translateY(${end}px)`, offset: 1 },
     ],
-    {
-      duration: (dist / rand(SPEED[0], SPEED[1])) * 1000,
-      easing: "linear",
-      fill: "both",
-    },
+    timing,
+  );
+  const fadeEl = el.firstElementChild as HTMLElement;
+  const fadeAnim = fadeEl.animate(
+    [
+      { ...hidden, offset: 0 },
+      { ...shown, offset: fade },
+      { ...shown, offset: 1 - fade },
+      { ...hidden, offset: 1 },
+    ],
+    timing,
   );
   // On load, start each flake part-way through so the snow is already going.
-  if (first)
-    anim.currentTime = rand(
-      0,
-      Number(anim.effect?.getComputedTiming().duration ?? 0),
-    );
+  if (first) {
+    const t = rand(0, Number(anim.effect?.getComputedTiming().duration ?? 0));
+    anim.currentTime = t;
+    fadeAnim.currentTime = t;
+  }
   anim.onfinish = () => {
     if (el.isConnected) fall(el, panel, false);
   };
@@ -105,8 +116,7 @@ export default function Snowfall() {
     if (!layer || !flakes.length) return;
     const els = [...layer.children] as HTMLElement[];
     els.forEach((el) => fall(el, layer, true));
-    return () =>
-      els.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+    return () => els.forEach((el) => el.getAnimations({ subtree: true }).forEach((a) => a.cancel()));
   }, [flakes]);
 
   return (
@@ -122,12 +132,9 @@ export default function Snowfall() {
               } as React.CSSProperties
             }
           >
-            <img
-              src={f.src}
-              alt=""
-              width={f.w * f.scale}
-              height={f.h * f.scale}
-            />
+            <div className="snowflake-fade">
+              <img src={f.src} alt="" width={f.w * f.scale} height={f.h * f.scale} />
+            </div>
           </div>
         ))}
     </div>

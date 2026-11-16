@@ -21,7 +21,7 @@ const THRESHOLDS =
 // ── Pixel art for the 3D iPod: #ipod-pixels and #ipod-shade ────────────────
 // PX: size of one "pixel", in CSS px; 2 matches the logos. Both filters share
 // this grid, so shading pixels land exactly on colour pixels.
-const PX = 4;
+const PX = 1;
 const PX_TILE = PX * 2;
 // Bayer thresholds, one per PX block (as alpha, like THRESHOLDS above).
 const PX_THRESHOLDS =
@@ -34,18 +34,19 @@ const PX_THRESHOLDS =
       ).join("") +
       "</svg>",
   );
-// One opaque dot near the centre of each PX block: where it's sampled. The
-// centre, because the browser draws these pattern images slightly soft, so
-// block edges aren't reliable.
-const MID = Math.floor(PX / 2);
-const DOT =
+// One opaque dot near the centre of each block of `size` px: where it's
+// sampled. The centre, because the browser draws these pattern images
+// slightly soft, so block edges aren't reliable.
+const mid = (size: number) => Math.floor(size / 2);
+const dot = (size: number) =>
   "data:image/svg+xml," +
   encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${PX}" height="${PX}" shape-rendering="crispEdges">` +
-      `<rect x="${MID}" y="${MID}" width="1" height="1"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" shape-rendering="crispEdges">` +
+      `<rect x="${mid(size)}" y="${mid(size)}" width="1" height="1"/></svg>`,
   );
 // Every offset from the sample to the rest of its block, to copy it across.
-const SPREAD = Array.from({ length: PX * PX }, (_, i) => [(i % PX) - MID, Math.floor(i / PX) - MID]);
+const spread = (size: number) =>
+  Array.from({ length: size * size }, (_, i) => [(i % size) - mid(size), Math.floor(i / size) - mid(size)]);
 // Colour of the shading pixels, and how strong each one is.
 const SHADE_COLOR = "#25232C";
 const SHADE_OPACITY = 0.32;
@@ -83,19 +84,19 @@ function snapTable(channel: number) {
 // solid pixel rows instead of broken dashes.
 const PRE_BLUR = 0.3;
 
-// Pixelate: keep one sample per PX block and copy it across the block (the
-// copies never overlap, so colours stay exact). Used by both iPod filters.
-function Pixelate({ in: input, result }: { in: string; result: string }) {
+// Pixelate: keep one sample per block and copy it across the block (the
+// copies never overlap, so colours stay exact). Blocks are PX by default.
+function Pixelate({ in: input, result, size = PX }: { in: string; result: string; size?: number }) {
   return (
     <>
-      <feImage href={DOT} x="0" y="0" width={PX} height={PX} result={`${result}-dot`} />
+      <feImage href={dot(size)} x="0" y="0" width={size} height={size} result={`${result}-dot`} />
       <feTile in={`${result}-dot`} result={`${result}-dots`} />
       <feComposite in={input} in2={`${result}-dots`} operator="in" result={`${result}-samples`} />
-      {SPREAD.map(([dx, dy]) => (
+      {spread(size).map(([dx, dy]) => (
         <feOffset key={`${dx}-${dy}`} in={`${result}-samples`} dx={dx} dy={dy} result={`${result}-${dx}-${dy}`} />
       ))}
       <feMerge result={result}>
-        {SPREAD.map(([dx, dy]) => (
+        {spread(size).map(([dx, dy]) => (
           <feMergeNode key={`${dx}-${dy}`} in={`${result}-${dx}-${dy}`} />
         ))}
       </feMerge>

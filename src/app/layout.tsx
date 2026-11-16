@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Mono, Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import UiSounds from "./UiSounds";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,8 +35,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col px-4 pt-4">
+      <body className="min-h-full flex flex-col pt-4">
         {children}
+        <UiSounds />
         <div className="paper-overlay" aria-hidden />
       </body>
     </html>

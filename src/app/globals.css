@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  --gallery-ms: 550ms; /* GALLERY_MS in Playground.tsx */
+  --gallery-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --background: #F9F9F9;
   --frame: #F3F3F3; /* page edge around the main container */
   --frame-stroke: #E1E1E1;
@@ -22,15 +24,419 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Main content panel: sits 1rem in from the top and sides of the window,
-   runs off the bottom, with rounded top corners and a thin outline. Its
-   background is --background with the sky gradient on top (page.tsx). */
+/* Main content panel: 1rem down from the top of the window, full width,
+   running off the bottom. Its background is --background with the sky
+   gradient on top (page.tsx). The side insets, side outline and rounded top
+   corners are drawn by .frame-gutter strips over its edges. */
 .main-frame {
   background-color: var(--background);
-  border: 1px solid var(--frame-stroke);
-  border-bottom: 0;
-  border-radius: 1.5rem 1.5rem 0 0;
+  /* Top outline as an inset shadow, not a border: the panel clips its
+     children to inside its border, so the gutters couldn't cover a border
+     and it showed past the rounded corners. They can cover this. */
+  box-shadow: inset 0 1px var(--frame-stroke);
   overflow: hidden;
+  /* Behind the playground gallery the page shrinks, blurs and fades
+     (Playground.tsx adds .is-behind-gallery). */
+  transition:
+    transform var(--gallery-ms) var(--gallery-ease),
+    filter var(--gallery-ms) var(--gallery-ease),
+    opacity var(--gallery-ms) var(--gallery-ease);
+}
+.main-frame.is-behind-gallery {
+  transform: scale(0.9); /* BEHIND_SCALE in Playground.tsx */
+  filter: blur(5px);
+  opacity: 0.5;
+}
+
+/* Side gutters: a 1rem strip of page edge with the outline on its inner side
+   and the rounded corner at the top. As you scroll they slide out past the
+   window edges (ScrollFx.tsx), so the panel appears to grow to full width,
+   and slide back in at the top of the page. Sliding (transform) is done by
+   the GPU: nothing is re-laid out or repainted, which keeps scrolling smooth. */
+.frame-gutter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 45;
+  width: 17px; /* 1rem of page edge + 1px outline */
+  background: var(--frame);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.frame-gutter.is-left {
+  left: 0;
+  border-right: 1px solid var(--frame-stroke);
+}
+
+.frame-gutter.is-right {
+  right: 0;
+  border-left: 1px solid var(--frame-stroke);
+}
+
+/* Rounded top corner (1.5rem): page edge outside the curve, outline on it. */
+.frame-gutter::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.frame-gutter.is-left::after {
+  left: 16px;
+  background: radial-gradient(
+    circle at 100% 100%,
+    transparent 23.5px,
+    var(--frame-stroke) 23.5px 24.5px,
+    var(--frame) 24.5px
+  );
+}
+
+.frame-gutter.is-right::after {
+  right: 16px;
+  background: radial-gradient(
+    circle at 0% 100%,
+    transparent 23.5px,
+    var(--frame-stroke) 23.5px 24.5px,
+    var(--frame) 24.5px
+  );
+}
+
+/* First screen of the page (page.tsx): one window tall, below the 1rem top
+   inset. The logos, intro, snow and iPod are all placed inside it. */
+.hero {
+  height: calc(100vh - 1rem);
+  flex: none;
+  padding-inline: 1rem; /* content clear of the side gutters, as before */
+}
+
+/* Scroll test: extra empty space under the first screen. */
+/* Playground spread under the first screen (Playground.tsx, Figma 46:4198).
+   Only the white media area scales with the page (393 of the 1512 frame);
+   the card around it, its corners and the 12px text stay the same size. */
+.playground {
+  position: relative;
+  flex: none;
+  width: 100%;
+  overflow: hidden;
+  container-type: inline-size;
+  /* Keeps the cards' stacking (and the hovered card's z-index) inside this
+     section, so the paper texture and frame edges stay on top. */
+  isolation: isolate;
+  margin-top: -90px; /* tucked up a little under the first screen */
+  pointer-events: none; /* only the cards take the mouse, not the empty space */
+  /* Share of each card's distance from the middle it's pulled in by while
+     squeezed (Playground.tsx opens it on scroll). */
+  --squeeze: 0.14;
+}
+.playground.is-open {
+  --squeeze: 0;
+}
+.playground-card {
+  position: absolute;
+  /* Centred on its spot and turned; on hover it lifts and comes to the top
+     of the pile. z-index waits on the way out so the card stays on top
+     while it settles back down. */
+  /* While hovered it also leans toward the cursor (Playground.tsx sets
+     --follow-x/--follow-y, -1 to 1), like the logo labels. */
+  --follow-range-x: 10px;
+  --follow-range-y: 8px;
+  --follow-tilt: 1.5deg;
+  transform: translate(
+      calc(-50% + var(--follow-x, 0) * var(--follow-range-x)),
+      calc(-50% + var(--lift, 0px) + var(--follow-y, 0) * var(--follow-range-y))
+    )
+    rotate(calc(var(--rot) + var(--follow-x, 0) * var(--follow-tilt)));
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0s 0.3s,
+    translate 0.9s cubic-bezier(0.34, 1.45, 0.64, 1); /* springy, small overshoot */
+  /* The squeeze, kept apart from the hover transform so each has its own timing. */
+  translate: calc(var(--from-x) * var(--squeeze) * -1) calc(var(--from-y) * var(--squeeze) * -1);
+  pointer-events: auto;
+  cursor: pointer;
+  padding: 43px 11px 13px; /* 44 / 12 / 14 from the outer edge, inside the 1px border */
+  border: 1px solid #e1e1e1;
+  border-radius: 20px;
+  background: rgba(239, 239, 239, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  overflow: hidden;
+  font-family: var(--font-dm-mono), monospace;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: -0.24px;
+  line-height: normal;
+  white-space: nowrap;
+  user-select: none;
+}
+.playground-title,
+.playground-date {
+  position: absolute;
+  top: 16px;
+}
+.playground-title {
+  left: 20px;
+  color: #202126;
+}
+.playground-date {
+  right: 20px;
+  color: #69696d;
+  transition: opacity 0.15s, transform 0.2s;
+}
+.playground-arrow {
+  position: absolute;
+  right: 22px;
+  top: 17px;
+  color: #696b7c;
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 0.15s, transform 0.2s;
+}
+.playground-card:hover {
+  --lift: -12px;
+  z-index: 100;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0s,
+    translate 0.9s cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+.playground-card:hover .playground-date {
+  opacity: 0;
+  transform: translateY(-3px);
+}
+.playground-card:hover .playground-arrow {
+  opacity: 1;
+  transform: none;
+  animation: playground-arrow-bounce 0.9s ease-in-out 0.2s infinite;
+}
+@keyframes playground-arrow-bounce {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(1.5px, -1.5px); /* along the arrow, up and right */
+  }
+}
+.playground-media {
+  width: 25.99cqw; /* 393 / 1512 */
+  aspect-ratio: 393 / 281;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: #f9f9f9;
+  overflow: hidden;
+}
+/* Real card while its copy is out in the gallery. */
+.playground-card.is-away {
+  visibility: hidden;
+}
+
+/* ─── Playground gallery (Playground.tsx, Figma 63:356) ─────────────────── */
+html.is-gallery-open {
+  overflow: hidden; /* no scrolling the page behind it */
+}
+.gallery {
+  position: fixed;
+  inset: 0;
+  z-index: 48; /* over the page and frame edges, under the paper (50) */
+  pointer-events: none; /* only while a card is still flying home */
+}
+.gallery.is-open {
+  pointer-events: auto;
+}
+.gallery-count,
+.gallery-close,
+.gallery-nav {
+  z-index: 2; /* over the cards flying in and out */
+  opacity: 0;
+  animation: gallery-in 0.3s ease 0.15s forwards;
+}
+@keyframes gallery-in {
+  to {
+    opacity: 1;
+  }
+}
+.gallery-count {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  font-family: var(--font-dm-mono), monospace;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: -0.24px;
+  color: #696b7c;
+  user-select: none;
+}
+.gallery-close {
+  position: absolute;
+  top: 25px;
+  right: 26px;
+  padding: 6px;
+  display: flex;
+  color: #696b7c;
+  cursor: pointer;
+}
+.gallery-close:hover {
+  color: #2a2b39;
+}
+.gallery-nav {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #e1e1e1;
+  border-radius: 16px;
+  background: rgba(239, 239, 239, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.gallery-nav button {
+  width: 40px;
+  height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px 0 0 12px;
+  color: #696b7c;
+  cursor: pointer;
+}
+.gallery-nav button + button {
+  border-radius: 0 12px 12px 0;
+}
+.gallery-nav button:hover {
+  color: #2a2b39;
+}
+/* Press feedback: nudge toward the arrow's direction, then pull back. */
+.gallery-nav button.is-pressed {
+  --nudge: -4px;
+  animation: gallery-nudge 0.32s cubic-bezier(0.3, 0, 0.3, 1);
+}
+.gallery-nav button + button.is-pressed {
+  --nudge: 4px;
+}
+@keyframes gallery-nudge {
+  35% {
+    translate: var(--nudge) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+/* The card in flight / open. Same look as a pile card; its box animates
+   between the card's spot in the pile and the middle of the window. */
+.gallery-card {
+  position: absolute;
+  border: 1px solid #e1e1e1;
+  border-radius: 20px;
+  background: rgba(239, 239, 239, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  overflow: hidden;
+  font-family: var(--font-dm-mono), monospace;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: -0.24px;
+  line-height: normal;
+  white-space: nowrap;
+  user-select: none;
+  transition-property: left, top, width, height, transform, filter, opacity;
+  transition-duration: var(--gallery-ms);
+  transition-timing-function: var(--gallery-ease);
+}
+/* In (or flying to/from) the pile behind the open gallery: blurred and faded
+   like the page there (.main-frame.is-behind-gallery, scaled by 0.9), so it
+   blends in on the way rather than changing when it lands. */
+.gallery-card.is-behind {
+  filter: blur(4.5px);
+  opacity: 0.5;
+}
+.gallery-card .playground-title {
+  transition: left var(--gallery-ms) var(--gallery-ease);
+}
+.gallery-card.is-open .playground-title {
+  left: 23px;
+}
+.gallery-card .playground-media {
+  position: absolute;
+  width: auto;
+  aspect-ratio: auto;
+  top: 43px;
+  left: 11px;
+  right: 11px;
+  bottom: 13px;
+  transition:
+    left var(--gallery-ms) var(--gallery-ease),
+    right var(--gallery-ms) var(--gallery-ease),
+    bottom var(--gallery-ms) var(--gallery-ease);
+}
+.gallery-card.is-open .playground-media {
+  left: 13px;
+  right: 13px;
+  bottom: 69px; /* room for the description */
+}
+/* Top-right icon: sits where the hover arrow was, then moves in a little
+   and the corner lines draw in around the arrow. */
+.gallery-icon-link {
+  position: absolute;
+  top: 16px;
+  right: 21px;
+  display: flex;
+  color: #696b7c;
+  transition:
+    top var(--gallery-ms) var(--gallery-ease),
+    right var(--gallery-ms) var(--gallery-ease);
+}
+a.gallery-icon-link:hover {
+  color: #2a2b39;
+}
+.gallery-card.is-open .gallery-icon-link {
+  top: 19px;
+  right: 25px;
+}
+.gallery-icon-lines {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.35s ease;
+}
+.gallery-card.is-open .gallery-icon-lines {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.4s ease 0.25s;
+}
+.gallery-description {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  width: 229px;
+  translate: -50% 0;
+  margin: 0;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  line-height: normal;
+  white-space: normal;
+  text-align: center;
+  color: #696972;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.gallery-card.is-open .gallery-description {
+  opacity: 1;
+  transition: opacity 0.3s ease 0.25s;
+}
+
+.playground-media img,
+.playground-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Falling snow in the main panel (Snowfall.tsx). Flakes blur/fade in above
@@ -40,12 +446,21 @@ body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
+}
+
+/* Each flake is dithered on its own (much cheaper than dithering the whole
+   layer every frame), with padding so its sway and blur stay inside the
+   filter. The negative offsets cancel the padding out. Snowfall.tsx's PAD
+   must match. */
+.snowflake {
+  position: absolute;
+  top: -30px;
+  margin-left: -30px;
+  padding: 30px;
   filter: url(#dither); /* dithered fades, like the logo shadows (DitherFilter.tsx) */
 }
 
-.snowflake {
-  position: absolute;
-  top: 0;
+.snowflake-fade {
   opacity: 0; /* until its first animation starts */
 }
 
@@ -138,30 +553,44 @@ body {
   background: currentColor;
 }
 
-/* iPod icon in the bottom-left of the panel (IpodPopup.tsx). Just the icon;
-   the padding is an invisible, easier-to-hit click area. Goes dark like the
-   "magical" word, instantly on hover. */
-.ipod-button {
+/* Icon row (Figma 56:806): iPod icon, a divider, and the sound toggle,
+   bottom left of the first screen. */
+.corner-controls {
   position: absolute;
-  left: 16px;
-  bottom: 16px;
+  left: 42px; /* icons start 48px in; the buttons' padding makes up the rest */
+  bottom: 34px; /* icons sit 40px up from the bottom edge */
   z-index: 2;
   display: flex;
-  padding: 8px;
-  color: #696b7c;
+  align-items: center;
+  gap: 4px; /* 10px between the icons themselves */
+}
+
+/* Just the icon, with invisible padding as an easier click area. Goes dark
+   like the "magical" word, instantly on hover. */
+.corner-icon {
+  display: flex;
+  padding: 6px;
+  color: #969caa;
   cursor: pointer;
 }
 
-.ipod-button:hover {
+.corner-icon:hover {
   color: #2a2b39;
+}
+
+.corner-divider {
+  width: 1px;
+  height: 20px;
+  border-radius: 1px;
+  background: #969caa;
 }
 
 /* The popup panel (flat; only the iPod inside is 3D). Figma 53:732 / 53:710.
    Opens above the button; --ipod-scale shrinks it on short windows. */
 .ipod-popup {
   position: absolute;
-  left: 24px;
-  bottom: 58px;
+  left: 40px; /* 24px inside the side gutter */
+  bottom: 78px; /* 16px above the icon row (34px + its 28px height) */
   z-index: 40;
   width: 366px;
   height: 558px;
@@ -178,6 +607,8 @@ body {
   transition:
     opacity 0.2s ease,
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     visibility 0s linear 0.3s;
 }
 
@@ -187,7 +618,19 @@ body {
   transform: translate(var(--move-x, 0px), var(--move-y, 0px)) scale(var(--ipod-scale, 1));
   transition:
     opacity 0.2s ease,
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Compact mode (top-right button): half the height, showing the iPod's
+   screen (the stage shifts so the screen sits in the middle under the top
+   bar). The top edge stays put and the bottom rises: bottom moves up by
+   exactly what the height loses, on the same timing. The iPod turns to face
+   you and can't be spun (IpodPopup.tsx). */
+.ipod-popup.is-compact {
+  height: 279px;
+  bottom: calc(78px + 279px);
 }
 
 /* Top bar, also the handle for moving the panel around: the whole strip
@@ -207,7 +650,7 @@ body {
   align-items: center;
   justify-content: space-between;
   height: 60px;
-  padding: 19px 26px;
+  padding: 19px 25px 19px 24px;
   cursor: move;
   user-select: none;
   -webkit-user-select: none;
@@ -223,30 +666,406 @@ body {
   pointer-events: none;
 }
 
-.ipod-close {
+.ipod-close,
+.ipod-resize {
   display: flex;
   padding: 6px;
   margin: -6px;
+  color: #696b7c;
   pointer-events: auto;
   cursor: pointer;
 }
 
+/* Dark on hover, instantly, like the other icons. */
+.ipod-close:hover,
+.ipod-resize:hover {
+  color: #2a2b39;
+}
+
+/* Resize arrows turn 180° each, in place, to point out in compact mode. */
+.ipod-resize-icon path {
+  transform-box: view-box;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ipod-popup.is-compact .ipod-resize-icon path {
+  transform: rotate(180deg);
+}
+
 /* Drag area: the whole panel. Nothing in it is selectable, so spinning the
-   iPod never highlights the wheel text. Colours snapped to the iPod's palette
-   (#ipod-palette, DitherFilter.tsx) for harsh pixel-art colours. */
+   iPod never highlights the wheel text. */
 .ipod-stage {
   position: absolute;
-  inset: 0;
-  filter: url(#ipod-palette);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 556px; /* the full window's inside height: it doesn't resize in compact mode, just gets cropped */
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
   touch-action: pan-y;
   outline: none;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.ipod-stage:active {
+.ipod-popup.is-compact .ipod-stage {
+  transform: translateY(-14px);
+  cursor: default;
+}
+
+.ipod-popup:not(.is-compact) .ipod-stage:active {
   cursor: grabbing;
+}
+
+/* The pixel-art iPod (colour + shading copies), with colours snapped to its
+   palette (#ipod-palette, DitherFilter.tsx) for harsh pixel-art colours. */
+.ipod-art {
+  position: absolute;
+  inset: 0;
+  filter: url(#ipod-palette);
+  pointer-events: none;
+}
+
+/* ── Live screen + click wheel (IpodPopup.tsx, ipod/IpodScreen.tsx) ───────
+   A third copy of the front face, unfiltered so it stays sharp. It has no
+   border, so positions here are 1px further in than on the drawn face. */
+.ipod-live {
+  border: 0;
+  background: none;
+}
+
+/* Test: the screen through the same pixelation as the iPod (not the colour
+   snapping, so covers keep their colours). Delete this rule for a sharp screen. */
+.ipod-layer-live {
+  filter: url(#ipod-pixels);
+}
+
+.ipod-live-screen {
+  position: absolute;
+  left: 16px;
+  top: 17px;
+  width: 216px;
+  height: 150px;
+  border: 2px solid #2a2b39;
+  border-radius: 6px;
+  background: #f9f9f9;
+  overflow: hidden;
+}
+
+/* Dims the screen as the iPod turns away from the light (set from JS). */
+.ipod-live-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Click wheel buttons: four wedges (MENU top, next right, play bottom,
+   back left) and the centre button, over the drawn wheel. */
+.ipod-live-wheel {
+  position: absolute;
+  left: 34px;
+  top: 191px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.ipod-wheel-btn {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  background: transparent;
+  outline: none;
+}
+
+.ipod-wheel-btn.is-menu {
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
+}
+
+.ipod-wheel-btn.is-next {
+  clip-path: polygon(100% 0, 100% 100%, 50% 50%);
+}
+
+.ipod-wheel-btn.is-play {
+  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
+}
+
+.ipod-wheel-btn.is-prev {
+  clip-path: polygon(0 0, 0 100%, 50% 50%);
+}
+
+.ipod-wheel-btn.is-select {
+  inset: 52px;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+/* Screen contents, on the 212 x 146 area inside the screen border (Figma
+   53:784, whose positions include the 2px border). */
+.ipod-ui {
+  position: absolute;
+  inset: 0;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  color: #000;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ipod-ui img {
+  display: block;
+  pointer-events: none;
+}
+
+.ipod-ui-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 17px;
+  padding: 0 8px;
+  border-bottom: 0.5px solid #7f7f7f;
+  background: url("/ipod/titlebar.png") center / 100% 100%;
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: -0.16px;
+}
+
+/* Title bar text: both titles in one spot, crossfading on switch. */
+.ipod-ui-titles {
+  display: grid;
+}
+
+.ipod-ui-titles > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.ipod-ui-titles > span.is-shown {
+  opacity: 1;
+}
+
+/* The two screens side by side; .is-playing slides to Now Playing. */
+.ipod-ui-pages {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 200%;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ipod-ui-pages.is-playing {
+  transform: translateX(-50%);
+}
+
+.ipod-ui-page {
+  position: relative;
+  flex: none;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ipod-ui-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ipod-ui-battery {
+  position: relative;
+  width: 16px;
+  height: 6px;
+  border: 0.2px solid #717171;
+  border-radius: 2px;
+  background: linear-gradient(#d2f6d7 41%, #1cc13d);
+}
+
+.ipod-ui-battery::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 1.5px;
+  width: 1px;
+  height: 2px;
+  background: #f9f9f9;
+  border: 0.2px solid #717171;
+}
+
+/* Play / pause state in the title bar (blue, like the original). */
+.ipod-ui-state {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 3px 0 3px 5px;
+  border-color: transparent transparent transparent #2f7fe0;
+}
+
+.ipod-ui-state.is-playing {
+  width: 5px;
+  height: 6px;
+  border-width: 0 1.5px;
+  border-color: #2f7fe0;
+}
+
+/* Cover Flow: covers in 3D inside the flat screen. */
+.ipod-ui-flow {
+  position: absolute;
+  inset: 0;
+  perspective: 180px;
+  perspective-origin: 50% 45%;
+}
+
+.ipod-cover {
+  position: absolute;
+  left: 64px;
+  top: 23px;
+  width: 80px;
+  height: 80px;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+.ipod-cover img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+/* Mirror image under each cover; the fade below blends it into the floor. */
+.ipod-cover-reflection {
+  transform: scaleY(-1);
+  opacity: 0.25;
+}
+
+.ipod-ui-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 103px;
+  height: 43px;
+  z-index: 200;
+  background: linear-gradient(rgba(249, 249, 249, 0) 4.65%, #f9f9f9 63.95%);
+  pointer-events: none;
+}
+
+.ipod-ui-title,
+.ipod-ui-artist {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  z-index: 201;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ipod-ui-title {
+  top: 112px;
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: -0.16px;
+}
+
+.ipod-ui-artist {
+  top: 122px;
+  font-weight: 500;
+  font-size: 6px;
+  letter-spacing: -0.12px;
+  color: #787878;
+}
+
+/* Now Playing (ipod/IpodScreen.tsx), like the iPod classic: cover on the
+   left with its reflection, title / artist / album on the right. */
+.ipod-now-cover {
+  left: 12px;
+  top: 26px;
+  width: 70px;
+  height: 70px;
+  /* Turned slightly, right edge away from you, like the iPod classic. The
+     reflection is inside, so it turns with the cover and stays attached. */
+  transform: perspective(160px) rotateY(20deg);
+  transform-origin: 0 50%;
+}
+
+/* Reflection that fades out right under the cover. Its fade is built in
+   (a mask), so nothing below it shows through. Flipped, so the mask's
+   "bottom" is the edge touching the cover. */
+.ipod-now-cover .ipod-cover-reflection {
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent 45%);
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent 45%);
+}
+
+.ipod-now-cover img {
+  width: 70px;
+  height: 70px;
+}
+
+.ipod-now-text {
+  position: absolute;
+  left: 92px;
+  right: 10px;
+  top: 38px;
+  z-index: 201;
+  font-weight: 700;
+}
+
+.ipod-now-title {
+  margin-bottom: 3px;
+  font-size: 9px;
+  line-height: 1.15;
+  letter-spacing: -0.18px;
+  color: #000;
+}
+
+.ipod-now-meta {
+  font-size: 6.5px;
+  line-height: 1.3;
+  letter-spacing: -0.1px;
+  color: #8a8a8a;
+}
+
+/* Now Playing: time elapsed, progress bar, time left. */
+.ipod-ui-progress {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 124px;
+  z-index: 201;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 6.5px;
+  font-variant-numeric: tabular-nums;
+  color: #2a2b39;
+}
+
+.ipod-ui-track {
+  flex: 1;
+  height: 4px;
+  border: 0.2px solid #a9a9a9;
+  border-radius: 1px;
+  background: #e6e6e6;
+  overflow: hidden;
+}
+
+.ipod-ui-track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(#8cc0f7, #2f7fe0);
 }
 
 /* The two stacked copies of the iPod (IpodPopup.tsx), each turned into
@@ -648,4 +1467,52 @@ body {
   .snowflake img {
     animation: none;
   }
+}
+
+/* Running fox (Fox.tsx). The box crosses the panel in whole 2px steps; the
+   canvas inside draws the gallop. */
+.fox {
+  position: absolute;
+  left: 0;
+  /* Runs just in front of the logos: the logo row is centred in the first
+     screen with its ground line ~63px below the middle, and the paws land
+     ~14px below that so it passes in front of them. */
+  top: calc(50% + 20px);
+  z-index: 2; /* in front of the snow and the logos */
+  width: 225px; /* 250 x 160 rig at 90% (FOX_W in Fox.tsx) */
+  height: 144px;
+  pointer-events: none;
+  /* Fox.tsx sets the run from the window width and SPEED, in whole 2px
+     steps (steps() keeps every position on the pixel grid). */
+  animation: fox-run var(--fox-run, 7s) steps(var(--fox-steps, 600), jump-none) forwards;
+}
+@keyframes fox-run {
+  from {
+    transform: translateX(var(--fox-from, -246px));
+  }
+  to {
+    transform: translateX(var(--fox-to, 100vw));
+  }
+}
+/* The fox's canvas: one canvas pixel per 2px cell, scaled up with hard
+   edges. It reaches out to the left of the box for the cast shadow. */
+.fox-canvas {
+  position: absolute;
+  top: 0;
+  image-rendering: pixelated;
+}
+/* Snow kicked up by the fox's paws (Fox.tsx kick). Dithered like the falling
+   snow, so it dissolves into speckles. Padding = KICK_PAD, room for the blur. */
+.fox-snow {
+  position: absolute;
+  z-index: 1; /* behind the fox (2), so it flicks out from under its legs */
+  padding: 14px;
+  pointer-events: none;
+  filter: url(#dither);
+}
+.fox-snow.is-front {
+  z-index: 3; /* some fly in front of the fox (2) for depth */
+}
+.fox-snow img {
+  display: block;
 }
